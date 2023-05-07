@@ -1,0 +1,12 @@
+model ModelFindingTest02
+
+class DomainClass
+attributes
+	n: Integer
+operations
+	inc(a: Integer)
+end
+
+constraints
+context DomainClass::inc(a: Integer)
+post postInc: n = n@pre + a

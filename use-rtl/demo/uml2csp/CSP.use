@@ -1,0 +1,90 @@
+model CSP
+class ProcessExpression
+end
+
+class BinaryOperator < ProcessExpression
+end
+
+class Condition < BinaryOperator
+attributes
+  expression : String
+end
+
+class Concurrency < BinaryOperator,ProcessWithSet
+attributes
+  name : String
+end
+
+class Process < ProcessExpression
+attributes
+  name : String
+  subscript : String
+end
+
+class CspContainer
+end
+
+class ProcessAssignment
+end
+
+class Prefix < ProcessExpression
+end
+
+class ProcessWithSet < ProcessExpression
+end
+
+class Hiding < ProcessWithSet
+end
+
+class Event
+attributes
+  name : String
+end
+
+association Hides between
+  Hiding[0..1] role hiding
+  ProcessExpression[1..1] role processExpression
+end
+association References between
+  ProcessWithSet[0..1] role processWithSet
+  Event[0..*] role event
+end
+association Becomes between
+  Prefix[0..*] role prefix
+  ProcessExpression[1..1] role processExpression
+end
+association Performs between
+  Prefix[0..*] role prefix
+  Event[1..1] role event
+end
+association AssignsRight between
+  ProcessAssignment[0..*] role process
+  ProcessExpression[1..1] role right
+end
+association AssignsLeft between
+  ProcessAssignment[0..1] role processIdentifier
+  Process[1..1] role left
+end
+association ContainsProcessAssignment between
+  CspContainer[0..1] role cspContainer
+  ProcessAssignment[0..*] role processAssignment
+end
+association CombinesLeft between
+  BinaryOperator[0..1] role binaryOperatorLeft
+  ProcessExpression[1..1] role leftHandSide
+end
+association CombinesRight between
+  BinaryOperator[0..1] role binaryOperatorRight
+  ProcessExpression[1..1] role rightHandSide
+end
+
+constraints
+
+-- invariants on CSP processes
+context Hiding inv hiddenEventsNotEmpty:
+  event->notEmpty()
+context BinaryOperator inv LhsUnequalRhs:
+  leftHandSide<>rightHandSide
+context CspContainer inv distinctProcessNames:
+  processAssignment->forAll(pa1,pa2|pa1<>pa2 implies pa1.left.name<>pa2.left.name)
+

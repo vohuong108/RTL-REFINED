@@ -1,0 +1,2455 @@
+model Act2CSP
+
+
+class ActivityEdge
+attributes
+  name : String
+  guard : String
+end
+
+class Action < ActivityNode
+attributes
+  name : String
+end
+
+class ActivityNode
+end
+
+class DecisionNode < ActivityNode
+end
+
+class ForkNode < ActivityNode
+end
+
+class FinalNode < ActivityNode
+end
+
+class InitialNode < ActivityNode
+end
+
+class JoinNode < ActivityNode
+end
+
+class MergeNode < ActivityNode
+end
+
+
+association ConnectsFrom between
+  ActivityEdge[0..*] role outEdge
+  ActivityNode[0..1] role source
+end
+association ConnectsTo between
+  ActivityEdge[0..*] role inEdge
+  ActivityNode[0..1] role target
+end
+
+constraints
+
+-- invariants on UML activity diagrams
+context InitialNode inv oneInitialNode:
+  InitialNode.allInstances->size()=1
+context InitialNode inv hasOutgoingEdge:
+  outEdge->size()>0
+context FinalNode inv hasIncomingEdge:
+  inEdge->size()>0
+context DecisionNode inv hasAtLeastTwoOutgoingEdges:
+  outEdge->size()>=2
+context DecisionNode inv hasDifferentGuardsOnOutgoingEdges:
+  outEdge->forAll(e1,e2|e1<>e2 implies e1.guard<>e2.guard)
+
+
+
+class ProcessExpression
+end
+
+class BinaryOperator < ProcessExpression
+end
+
+class Condition < BinaryOperator
+attributes
+  expression : String
+end
+
+class Concurrency < BinaryOperator,ProcessWithSet
+attributes
+  name : String
+end
+
+class Process < ProcessExpression
+attributes
+  name : String
+  subscript : String
+end
+
+class CspContainer
+end
+
+class ProcessAssignment
+end
+
+class Prefix < ProcessExpression
+end
+
+class ProcessWithSet < ProcessExpression
+end
+
+class Hiding < ProcessWithSet
+end
+
+class Event
+attributes
+  name : String
+end
+
+association Hides between
+  Hiding[0..1] role hiding
+  ProcessExpression[1..1] role processExpression
+end
+association References between
+  ProcessWithSet[0..1] role processWithSet
+  Event[0..*] role event
+end
+association Becomes between
+  Prefix[0..*] role prefix
+  ProcessExpression[1..1] role processExpression
+end
+association Performs between
+  Prefix[0..*] role prefix
+  Event[1..1] role event
+end
+association AssignsRight between
+  ProcessAssignment[0..*] role process
+  ProcessExpression[1..1] role right
+end
+association AssignsLeft between
+  ProcessAssignment[0..1] role processIdentifier
+  Process[1..1] role left
+end
+association ContainsProcessAssignment between
+  CspContainer[0..1] role cspContainer
+  ProcessAssignment[0..*] role processAssignment
+end
+association CombinesLeft between
+  BinaryOperator[0..1] role binaryOperatorLeft
+  ProcessExpression[1..1] role leftHandSide
+end
+association CombinesRight between
+  BinaryOperator[0..1] role binaryOperatorRight
+  ProcessExpression[1..1] role rightHandSide
+end
+
+constraints
+
+-- invariants on CSP processes
+context Hiding inv hiddenEventsNotEmpty:
+  event->notEmpty()
+context BinaryOperator inv LhsUnequalRhs:
+  leftHandSide<>rightHandSide
+context CspContainer inv distinctProcessNames:
+  processAssignment->forAll(pa1,pa2|pa1<>pa2 implies pa1.left.name<>pa2.left.name)
+
+class AE2P
+end
+
+class AC2E
+end
+
+class F2P
+end
+
+class AE2CON
+end
+
+association AE2P_ActivityEdge between
+  ActivityEdge[1] role ae
+  AE2P[0..1] role ae2p
+end
+
+association AE2P_Process between
+  Process[1] role p
+  AE2P[0..1] role ae2p
+end
+
+association AC2E_Action between
+  Action[1] role act
+  AC2E[0..1] role ac2e
+end
+
+association AC2E_Event between
+  Event[1]
+  AC2E[0..1] role ac2e
+end
+
+association F2P_FinalNode between
+  FinalNode[1] role f
+  F2P[0..1] role f2p
+end
+
+association F2P_Process between
+  Process[1] role p
+  F2P[0..1] role f2p
+end
+
+association AE2CON_ActivityEdge between
+  ActivityEdge[1] role ae
+  AE2CON[0..1] role ae2con
+end
+
+association AE2CON_Condition between
+  Condition[1] role con
+  AE2CON[0..1] role ae2con
+end
+
+---------- Correlation invariants ----------
+constraints
+context AE2P inv:
+    self.p.name=self.ae.name
+context AC2E inv:
+    self.event.name=self.act.name
+context AE2CON inv:
+    self.con.expression=self.ae.guard
+
+---------- RuleCollection ----------
+class RuleCollection
+operations
+---------- Forward transformations ----------
+trafoInitialNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, init: InitialNode))
+trafoActionNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, action: Action, theActivityEdgeB: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+trafoFinalNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, finalNode: FinalNode),
+    matchCL: Tuple(ae2p: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+trafoDecision3Node_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, decisionNode: DecisionNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+trafoDecision2Node_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, decisionNode: DecisionNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+trafoForkNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, forkNode: ForkNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+trafoJoinNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, joinNode: JoinNode, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P, ae2p3: AE2P),
+    matchTL: Tuple(theProcessA: Process, theProcessB: Process, theProcessC: Process))
+trafoMergeNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, mergeNode: MergeNode),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P),
+    matchTL: Tuple(theProcessA: Process, theProcessB: Process))
+
+---------- Backward transformations ----------
+trafoInitialNode_backTrafo (
+    matchTR: Tuple(theProcessA: Process))
+trafoActionNode_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, prefix: Prefix, theProcessB: Process, theEvent: Event))
+trafoFinalNode_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, SKIP: Process))
+trafoDecision3Node_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, condition1: Condition, condition2: Condition, theProcessB: Process, theProcessC: Process, theProcessD: Process))
+trafoDecision2Node_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, condition1: Condition, theProcessB: Process, theProcessC: Process))
+trafoForkNode_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, concurrency1: Concurrency, concurrency2: Concurrency, theProcessB: Process, theProcessC: Process, theProcessD: Process))
+trafoJoinNode_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P, ae2p3: AE2P),
+    matchTR: Tuple(theProcessA: Process, theProcessB: Process, theProcessC: Process, assignment1: ProcessAssignment, assignment2: ProcessAssignment, assignment3: ProcessAssignment, prefix1: Prefix, prefix2: Prefix, prefix3: Prefix, processJoin: Event, SKIP: Process, theProcessD: Process))
+trafoMergeNode_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P),
+    matchTR: Tuple(theProcessA: Process, theProcessB: Process, assignment1: ProcessAssignment, assignment2: ProcessAssignment, theProcessC: Process))
+
+---------- Integration transformations ----------
+trafoInitialNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, init: InitialNode),
+    matchTR: Tuple(theProcessA: Process))
+trafoActionNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, action: Action, theActivityEdgeB: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, prefix: Prefix, theProcessB: Process, theEvent: Event))
+trafoFinalNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, finalNode: FinalNode),
+    matchCL: Tuple(ae2p: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, SKIP: Process))
+trafoDecision3Node_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, decisionNode: DecisionNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, condition1: Condition, condition2: Condition, theProcessB: Process, theProcessC: Process, theProcessD: Process))
+trafoDecision2Node_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, decisionNode: DecisionNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, condition1: Condition, theProcessB: Process, theProcessC: Process))
+trafoForkNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, forkNode: ForkNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, concurrency1: Concurrency, concurrency2: Concurrency, theProcessB: Process, theProcessC: Process, theProcessD: Process))
+trafoJoinNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, joinNode: JoinNode, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P, ae2p3: AE2P),
+    matchTR: Tuple(theProcessA: Process, theProcessB: Process, theProcessC: Process, assignment1: ProcessAssignment, assignment2: ProcessAssignment, assignment3: ProcessAssignment, prefix1: Prefix, prefix2: Prefix, prefix3: Prefix, processJoin: Event, SKIP: Process, theProcessD: Process))
+trafoMergeNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, mergeNode: MergeNode),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P),
+    matchTR: Tuple(theProcessA: Process, theProcessB: Process, assignment1: ProcessAssignment, assignment2: ProcessAssignment, theProcessC: Process))
+
+---------- Co-evolution transformations ----------
+trafoInitialNode_coEvol ()
+trafoActionNode_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+trafoFinalNode_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+trafoDecision3Node_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+trafoDecision2Node_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+trafoForkNode_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+trafoJoinNode_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P, ae2p3: AE2P),
+    matchTL: Tuple(theProcessA: Process, theProcessB: Process, theProcessC: Process))
+trafoMergeNode_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P),
+    matchTL: Tuple(theProcessA: Process, theProcessB: Process))
+end
+
+
+---------- Transformation constraints ----------
+constraints
+context RuleCollection::trafoInitialNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, init: InitialNode))
+pre trafoInitialNode_forwTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let init:InitialNode = matchSR.init in
+theActivityEdgeA.source->includes(init) and 
+init.outEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.name<>oclUndefined(String) and 
+theActivityEdgeA.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeA.ae2p->size() = 0
+
+post trafoInitialNode_forwTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let init:InitialNode = matchSR.init in
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessA|
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p|
+ae2p.ae->includes(theActivityEdgeA) and
+theActivityEdgeA.ae2p->includes(ae2p) and
+theProcessA.ae2p->includes(ae2p) and
+ae2p.p->includes(theProcessA) and
+ae2p.p.name=ae2p.ae.name))
+
+context RuleCollection::trafoActionNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, action: Action, theActivityEdgeB: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+pre trafoActionNode_forwTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let action:Action = matchSR.action in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+theActivityEdgeA.name<>oclUndefined(String) and
+action.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(action) and 
+action.outEdge->includes(theActivityEdgeB) and 
+theActivityEdgeB.source->includes(action) and 
+action.name<>oclUndefined(String) and 
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and 
+action.cp_Action_AC2E->size()=0 and
+theProcessA.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theActivityEdgeB.ae2p->size() = 0 and
+action.ac2e->size() = 0
+
+post trafoActionNode_forwTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let action:Action = matchSR.action in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+Process.allInstances->includesAll(Set {theProcessA})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment|
+(Prefix.allInstances - Prefix.allInstances@pre)->exists(prefix|
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessB|
+(Event.allInstances - Event.allInstances@pre)->exists(theEvent|
+theProcessA.processIdentifier->includes(assignment) and
+assignment.left->includes(theProcessA) and
+assignment.right->includes(prefix) and
+prefix.process->includes(assignment) and
+prefix.event->includes(theEvent) and
+theEvent.prefix->includes(prefix) and
+theProcessB.prefix->includes(prefix) and
+prefix.processExpression->includes(theProcessB) and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2|
+(AC2E.allInstances - AC2E.allInstances@pre)->exists(ac2e|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+action.ac2e->includes(ac2e) and
+ac2e.act->includes(action) and
+ac2e.event->includes(theEvent) and
+theEvent.ac2e->includes(ac2e) and
+ac2e.event.name=ac2e.act.name))))))
+
+context RuleCollection::trafoFinalNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, finalNode: FinalNode),
+    matchCL: Tuple(ae2p: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+pre trafoFinalNode_forwTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let finalNode:FinalNode = matchSR.finalNode in
+let ae2p:AE2P = matchCL.ae2p in
+let theProcessA:Process = matchTL.theProcessA in
+theActivityEdgeA.name<>oclUndefined(String) and
+finalNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(finalNode) and 
+finalNode.cp_FinalNode_F2P->size()=0 and
+theProcessA.processIdentifier->size() < 1 and
+ae2p.ae->includes(theActivityEdgeA) and 
+theActivityEdgeA.ae2p->includes(ae2p) and 
+theProcessA.ae2p->includes(ae2p) and 
+ae2p.p->includes(theProcessA) and
+finalNode.f2p->size() = 0
+
+post trafoFinalNode_forwTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let finalNode:FinalNode = matchSR.finalNode in
+let ae2p:AE2P = matchCL.ae2p in
+let theProcessA:Process = matchTL.theProcessA in
+Process.allInstances->includesAll(Set {theProcessA})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment|
+(Process.allInstances - Process.allInstances@pre)->exists(SKIP|
+assignment.right->includes(SKIP) and
+SKIP.process->includes(assignment) and
+theProcessA.processIdentifier->includes(assignment) and
+assignment.left->includes(theProcessA) and
+SKIP.name = 'SKIP' and AE2P.allInstances->includesAll(Set {ae2p})
+ and
+(F2P.allInstances - F2P.allInstances@pre)->exists(f2p|
+f2p.f->includes(finalNode) and
+finalNode.f2p->includes(f2p) and
+SKIP.f2p->includes(f2p) and
+f2p.p->includes(SKIP))))
+
+context RuleCollection::trafoDecision3Node_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, decisionNode: DecisionNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+pre trafoDecision3Node_forwTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let decisionNode:DecisionNode = matchSR.decisionNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+theActivityEdgeA.name<>oclUndefined(String) and
+decisionNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(decisionNode) and 
+decisionNode.outEdge->includes(theActivityEdgeB) and 
+theActivityEdgeB.source->includes(decisionNode) and 
+decisionNode.outEdge->includes(theActivityEdgeC) and 
+theActivityEdgeC.source->includes(decisionNode) and 
+decisionNode.outEdge->includes(theActivityEdgeD) and 
+theActivityEdgeD.source->includes(decisionNode) and 
+theActivityEdgeB.name<>oclUndefined(String) and 
+theActivityEdgeC.name<>oclUndefined(String) and 
+theActivityEdgeD.guard = 'else' and 
+decisionNode.outEdge->size()=3 and 
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and 
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and 
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and
+theProcessA.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theActivityEdgeB.ae2p->size() = 0 and
+theActivityEdgeC.ae2p->size() = 0 and
+theActivityEdgeD.ae2p->size() = 0 and
+theActivityEdgeB.ae2con->size() = 0 and
+theActivityEdgeC.ae2con->size() = 0
+
+post trafoDecision3Node_forwTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let decisionNode:DecisionNode = matchSR.decisionNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+Process.allInstances->includesAll(Set {theProcessA})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment|
+(Condition.allInstances - Condition.allInstances@pre)->exists(condition1, condition2|
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessB, theProcessC, theProcessD|
+theProcessA.processIdentifier->includes(assignment) and
+assignment.left->includes(theProcessA) and
+assignment.right->includes(condition1) and
+condition1.process->includes(assignment) and
+condition1.leftHandSide->includes(theProcessB) and
+theProcessB.binaryOperatorLeft->includes(condition1) and
+condition1.rightHandSide->includes(condition2) and
+condition2.binaryOperatorRight->includes(condition1) and
+condition2.leftHandSide->includes(theProcessC) and
+theProcessC.binaryOperatorLeft->includes(condition2) and
+theProcessD.binaryOperatorRight->includes(condition2) and
+condition2.rightHandSide->includes(theProcessD) and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3, ae2p4|
+(AE2CON.allInstances - AE2CON.allInstances@pre)->exists(ae2con1, ae2con2|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD) and
+theActivityEdgeB.ae2con->includes(ae2con1) and
+ae2con1.ae->includes(theActivityEdgeB) and
+ae2con1.con->includes(condition1) and
+condition1.ae2con->includes(ae2con1) and
+ae2con2.ae->includes(theActivityEdgeC) and
+theActivityEdgeC.ae2con->includes(ae2con2) and
+condition2.ae2con->includes(ae2con2) and
+ae2con2.con->includes(condition2) and
+ae2con1.con.expression=ae2con1.ae.guard and
+ae2con2.con.expression=ae2con2.ae.guard)))))
+
+context RuleCollection::trafoDecision2Node_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, decisionNode: DecisionNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+pre trafoDecision2Node_forwTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let decisionNode:DecisionNode = matchSR.decisionNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+theActivityEdgeA.name<>oclUndefined(String) and
+decisionNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(decisionNode) and 
+decisionNode.outEdge->includes(theActivityEdgeB) and 
+theActivityEdgeB.source->includes(decisionNode) and 
+decisionNode.outEdge->includes(theActivityEdgeC) and 
+theActivityEdgeC.source->includes(decisionNode) and 
+theActivityEdgeB.name<>oclUndefined(String) and 
+theActivityEdgeC.guard = 'else' and 
+decisionNode.outEdge->size()=2 and 
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and 
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and
+theProcessA.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theActivityEdgeB.ae2p->size() = 0 and
+theActivityEdgeC.ae2p->size() = 0 and
+theActivityEdgeB.ae2con->size() = 0
+
+post trafoDecision2Node_forwTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let decisionNode:DecisionNode = matchSR.decisionNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+Process.allInstances->includesAll(Set {theProcessA})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment|
+(Condition.allInstances - Condition.allInstances@pre)->exists(condition1|
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessB, theProcessC|
+theProcessA.processIdentifier->includes(assignment) and
+assignment.left->includes(theProcessA) and
+assignment.right->includes(condition1) and
+condition1.process->includes(assignment) and
+condition1.leftHandSide->includes(theProcessB) and
+theProcessB.binaryOperatorLeft->includes(condition1) and
+condition1.rightHandSide->includes(theProcessC) and
+theProcessC.binaryOperatorRight->includes(condition1) and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3|
+(AE2CON.allInstances - AE2CON.allInstances@pre)->exists(ae2con1|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeB.ae2con->includes(ae2con1) and
+ae2con1.ae->includes(theActivityEdgeB) and
+ae2con1.con->includes(condition1) and
+condition1.ae2con->includes(ae2con1))))))
+
+context RuleCollection::trafoForkNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, forkNode: ForkNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+pre trafoForkNode_forwTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let forkNode:ForkNode = matchSR.forkNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+theActivityEdgeA.name<>oclUndefined(String) and
+forkNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(forkNode) and 
+forkNode.outEdge->includes(theActivityEdgeB) and 
+theActivityEdgeB.source->includes(forkNode) and 
+forkNode.outEdge->includes(theActivityEdgeC) and 
+theActivityEdgeC.source->includes(forkNode) and 
+theActivityEdgeD.source->includes(forkNode) and 
+forkNode.outEdge->includes(theActivityEdgeD) and 
+theActivityEdgeB.name<>oclUndefined(String) and 
+theActivityEdgeC.name<>oclUndefined(String) and 
+theActivityEdgeD.name<>oclUndefined(String) and 
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and 
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and 
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and
+theProcessA.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theActivityEdgeB.ae2p->size() = 0 and
+theActivityEdgeC.ae2p->size() = 0 and
+theActivityEdgeD.ae2p->size() = 0
+
+post trafoForkNode_forwTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let forkNode:ForkNode = matchSR.forkNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+Process.allInstances->includesAll(Set {theProcessA})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment|
+(Concurrency.allInstances - Concurrency.allInstances@pre)->exists(concurrency1, concurrency2|
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessB, theProcessC, theProcessD|
+theProcessA.processIdentifier->includes(assignment) and
+assignment.left->includes(theProcessA) and
+assignment.right->includes(concurrency1) and
+concurrency1.process->includes(assignment) and
+theProcessB.binaryOperatorLeft->includes(concurrency1) and
+concurrency1.leftHandSide->includes(theProcessB) and
+concurrency1.rightHandSide->includes(concurrency2) and
+concurrency2.binaryOperatorRight->includes(concurrency1) and
+concurrency2.leftHandSide->includes(theProcessC) and
+theProcessC.binaryOperatorLeft->includes(concurrency2) and
+theProcessD.binaryOperatorRight->includes(concurrency2) and
+concurrency2.rightHandSide->includes(theProcessD) and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3, ae2p4|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD)))))
+
+context RuleCollection::trafoJoinNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, joinNode: JoinNode, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P, ae2p3: AE2P),
+    matchTL: Tuple(theProcessA: Process, theProcessB: Process, theProcessC: Process))
+pre trafoJoinNode_forwTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let joinNode:JoinNode = matchSR.joinNode in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let ae2p3:AE2P = matchCL.ae2p3 in
+let theProcessA:Process = matchTL.theProcessA in
+let theProcessB:Process = matchTL.theProcessB in
+let theProcessC:Process = matchTL.theProcessC in
+theActivityEdgeA.name<>oclUndefined(String) and 
+theActivityEdgeB.name<>oclUndefined(String) and 
+theActivityEdgeC.name<>oclUndefined(String) and
+theActivityEdgeA.target->includes(joinNode) and 
+joinNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeB.target->includes(joinNode) and 
+joinNode.inEdge->includes(theActivityEdgeB) and 
+theActivityEdgeC.target->includes(joinNode) and 
+joinNode.inEdge->includes(theActivityEdgeC) and 
+joinNode.outEdge->includes(theActivityEdgeD) and 
+theActivityEdgeD.source->includes(joinNode) and 
+theActivityEdgeD.name<>oclUndefined(String) and 
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and
+theProcessA.processIdentifier->size() < 1 and
+theProcessB.processIdentifier->size() < 1 and
+theProcessC.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and 
+ae2p2.ae->includes(theActivityEdgeB) and 
+theActivityEdgeB.ae2p->includes(ae2p2) and 
+ae2p2.p->includes(theProcessB) and 
+theProcessB.ae2p->includes(ae2p2) and 
+theActivityEdgeC.ae2p->includes(ae2p3) and 
+ae2p3.ae->includes(theActivityEdgeC) and 
+ae2p3.p->includes(theProcessC) and 
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeD.ae2p->size() = 0
+
+post trafoJoinNode_forwTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let joinNode:JoinNode = matchSR.joinNode in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let ae2p3:AE2P = matchCL.ae2p3 in
+let theProcessA:Process = matchTL.theProcessA in
+let theProcessB:Process = matchTL.theProcessB in
+let theProcessC:Process = matchTL.theProcessC in
+Process.allInstances->includesAll(Set {theProcessA, theProcessB, theProcessC})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment1, assignment2, assignment3|
+(Prefix.allInstances - Prefix.allInstances@pre)->exists(prefix1, prefix2, prefix3|
+(Event.allInstances - Event.allInstances@pre)->exists(processJoin|
+(Process.allInstances - Process.allInstances@pre)->exists(SKIP, theProcessD|
+theProcessA.processIdentifier->includes(assignment1) and
+assignment1.left->includes(theProcessA) and
+assignment1.right->includes(prefix1) and
+prefix1.process->includes(assignment1) and
+theProcessB.processIdentifier->includes(assignment2) and
+assignment2.left->includes(theProcessB) and
+prefix2.process->includes(assignment2) and
+assignment2.right->includes(prefix2) and
+theProcessC.processIdentifier->includes(assignment3) and
+assignment3.left->includes(theProcessC) and
+assignment3.right->includes(prefix3) and
+prefix3.process->includes(assignment3) and
+prefix1.event->includes(processJoin) and
+processJoin.prefix->includes(prefix1) and
+theProcessD.prefix->includes(prefix1) and
+prefix1.processExpression->includes(theProcessD) and
+processJoin.prefix->includes(prefix2) and
+prefix2.event->includes(processJoin) and
+SKIP.prefix->includes(prefix2) and
+prefix2.processExpression->includes(SKIP) and
+processJoin.prefix->includes(prefix3) and
+prefix3.event->includes(processJoin) and
+SKIP.prefix->includes(prefix3) and
+prefix3.processExpression->includes(SKIP) and
+SKIP.name='SKIP' and
+processJoin.name='processJoin' and AE2P.allInstances->includesAll(Set {ae2p1, ae2p2, ae2p3})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p4|
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD))))))
+
+context RuleCollection::trafoMergeNode_forwTrafo (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, mergeNode: MergeNode),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P),
+    matchTL: Tuple(theProcessA: Process, theProcessB: Process))
+pre trafoMergeNode_forwTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let mergeNode:MergeNode = matchSR.mergeNode in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let theProcessA:Process = matchTL.theProcessA in
+let theProcessB:Process = matchTL.theProcessB in
+theActivityEdgeA.name<>oclUndefined(String) and 
+theActivityEdgeB.name<>oclUndefined(String) and
+mergeNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(mergeNode) and 
+mergeNode.inEdge->includes(theActivityEdgeB) and 
+theActivityEdgeB.target->includes(mergeNode) and 
+theActivityEdgeC.source->includes(mergeNode) and 
+mergeNode.outEdge->includes(theActivityEdgeC) and 
+theActivityEdgeC.name<>oclUndefined(String) and 
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and
+theProcessA.processIdentifier->size() < 1 and
+theProcessB.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and 
+ae2p2.ae->includes(theActivityEdgeB) and 
+theActivityEdgeB.ae2p->includes(ae2p2) and 
+ae2p2.p->includes(theProcessB) and 
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->size() = 0
+
+post trafoMergeNode_forwTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let mergeNode:MergeNode = matchSR.mergeNode in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let theProcessA:Process = matchTL.theProcessA in
+let theProcessB:Process = matchTL.theProcessB in
+Process.allInstances->includesAll(Set {theProcessA, theProcessB})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment1, assignment2|
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessC|
+theProcessA.processIdentifier->includes(assignment1) and
+assignment1.left->includes(theProcessA) and
+theProcessC.process->includes(assignment1) and
+assignment1.right->includes(theProcessC) and
+theProcessB.processIdentifier->includes(assignment2) and
+assignment2.left->includes(theProcessB) and
+assignment2.right->includes(theProcessC) and
+theProcessC.process->includes(assignment2) and AE2P.allInstances->includesAll(Set {ae2p1, ae2p2})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p3|
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3))))
+
+context RuleCollection::trafoInitialNode_backTrafo (
+    matchTR: Tuple(theProcessA: Process))
+pre trafoInitialNode_backTrafo_pre: 
+let theProcessA:Process = matchTR.theProcessA in
+theProcessA.ae2p->size() = 0
+
+post trafoInitialNode_backTrafo_post:
+let theProcessA:Process = matchTR.theProcessA in
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeA|
+(InitialNode.allInstances - InitialNode.allInstances@pre)->exists(init|
+theActivityEdgeA.source->includes(init) and
+init.outEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.cp_ActivityEdge_AE2P->size()=0 and (AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p|
+ae2p.ae->includes(theActivityEdgeA) and
+theActivityEdgeA.ae2p->includes(ae2p) and
+theProcessA.ae2p->includes(ae2p) and
+ae2p.p->includes(theProcessA) and
+ae2p.p.name=ae2p.ae.name)))
+
+context RuleCollection::trafoActionNode_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, prefix: Prefix, theProcessB: Process, theEvent: Event))
+pre trafoActionNode_backTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let prefix:Prefix = matchTR.prefix in
+let theProcessB:Process = matchTR.theProcessB in
+let theEvent:Event = matchTR.theEvent in
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theProcessA.processIdentifier->includes(assignment) and 
+assignment.left->includes(theProcessA) and 
+assignment.right->includes(prefix) and 
+prefix.process->includes(assignment) and 
+prefix.event->includes(theEvent) and 
+theEvent.prefix->includes(prefix) and 
+theProcessB.prefix->includes(prefix) and 
+prefix.processExpression->includes(theProcessB) and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theProcessB.ae2p->size() = 0 and
+theEvent.ac2e->size() = 0
+
+post trafoActionNode_backTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let prefix:Prefix = matchTR.prefix in
+let theProcessB:Process = matchTR.theProcessB in
+let theEvent:Event = matchTR.theEvent in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA})
+ and
+(Action.allInstances - Action.allInstances@pre)->exists(action|
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeB|
+action.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(action) and
+action.outEdge->includes(theActivityEdgeB) and
+theActivityEdgeB.source->includes(action) and
+action.name<>oclUndefined(String) and
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and
+action.cp_Action_AC2E->size()=0 and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2|
+(AC2E.allInstances - AC2E.allInstances@pre)->exists(ac2e|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+action.ac2e->includes(ac2e) and
+ac2e.act->includes(action) and
+ac2e.event->includes(theEvent) and
+theEvent.ac2e->includes(ac2e) and
+ac2e.event.name=ac2e.act.name))))
+
+context RuleCollection::trafoFinalNode_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, SKIP: Process))
+pre trafoFinalNode_backTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p:AE2P = matchCL.ae2p in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let SKIP:Process = matchTR.SKIP in
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+assignment.right->includes(SKIP) and 
+SKIP.process->includes(assignment) and 
+theProcessA.processIdentifier->includes(assignment) and 
+assignment.left->includes(theProcessA) and 
+SKIP.name = 'SKIP' and
+ae2p.ae->includes(theActivityEdgeA) and 
+theActivityEdgeA.ae2p->includes(ae2p) and 
+theProcessA.ae2p->includes(ae2p) and 
+ae2p.p->includes(theProcessA) and
+SKIP.f2p->size() = 0
+
+post trafoFinalNode_backTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p:AE2P = matchCL.ae2p in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let SKIP:Process = matchTR.SKIP in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA})
+ and
+(FinalNode.allInstances - FinalNode.allInstances@pre)->exists(finalNode|
+finalNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(finalNode) and
+finalNode.cp_FinalNode_F2P->size()=0 and AE2P.allInstances->includesAll(Set {ae2p})
+ and
+(F2P.allInstances - F2P.allInstances@pre)->exists(f2p|
+f2p.f->includes(finalNode) and
+finalNode.f2p->includes(f2p) and
+SKIP.f2p->includes(f2p) and
+f2p.p->includes(SKIP)))
+
+context RuleCollection::trafoDecision3Node_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, condition1: Condition, condition2: Condition, theProcessB: Process, theProcessC: Process, theProcessD: Process))
+pre trafoDecision3Node_backTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let condition1:Condition = matchTR.condition1 in
+let condition2:Condition = matchTR.condition2 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let theProcessD:Process = matchTR.theProcessD in
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theProcessA.processIdentifier->includes(assignment) and 
+assignment.left->includes(theProcessA) and 
+assignment.right->includes(condition1) and 
+condition1.process->includes(assignment) and 
+condition1.leftHandSide->includes(theProcessB) and 
+theProcessB.binaryOperatorLeft->includes(condition1) and 
+condition1.rightHandSide->includes(condition2) and 
+condition2.binaryOperatorRight->includes(condition1) and 
+condition2.leftHandSide->includes(theProcessC) and 
+theProcessC.binaryOperatorLeft->includes(condition2) and 
+theProcessD.binaryOperatorRight->includes(condition2) and 
+condition2.rightHandSide->includes(theProcessD) and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theProcessB.ae2p->size() = 0 and
+theProcessC.ae2p->size() = 0 and
+theProcessD.ae2p->size() = 0 and
+condition1.ae2con->size() = 0 and
+condition2.ae2con->size() = 0
+
+post trafoDecision3Node_backTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let condition1:Condition = matchTR.condition1 in
+let condition2:Condition = matchTR.condition2 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let theProcessD:Process = matchTR.theProcessD in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA})
+ and
+(DecisionNode.allInstances - DecisionNode.allInstances@pre)->exists(decisionNode|
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeB, theActivityEdgeC, theActivityEdgeD|
+decisionNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(decisionNode) and
+decisionNode.outEdge->includes(theActivityEdgeB) and
+theActivityEdgeB.source->includes(decisionNode) and
+decisionNode.outEdge->includes(theActivityEdgeC) and
+theActivityEdgeC.source->includes(decisionNode) and
+decisionNode.outEdge->includes(theActivityEdgeD) and
+theActivityEdgeD.source->includes(decisionNode) and
+theActivityEdgeB.name<>oclUndefined(String) and
+theActivityEdgeC.name<>oclUndefined(String) and
+theActivityEdgeD.guard = 'else' and
+decisionNode.outEdge->size()=3 and
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3, ae2p4|
+(AE2CON.allInstances - AE2CON.allInstances@pre)->exists(ae2con1, ae2con2|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD) and
+theActivityEdgeB.ae2con->includes(ae2con1) and
+ae2con1.ae->includes(theActivityEdgeB) and
+ae2con1.con->includes(condition1) and
+condition1.ae2con->includes(ae2con1) and
+ae2con2.ae->includes(theActivityEdgeC) and
+theActivityEdgeC.ae2con->includes(ae2con2) and
+condition2.ae2con->includes(ae2con2) and
+ae2con2.con->includes(condition2) and
+ae2con1.con.expression=ae2con1.ae.guard and
+ae2con2.con.expression=ae2con2.ae.guard))))
+
+context RuleCollection::trafoDecision2Node_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, condition1: Condition, theProcessB: Process, theProcessC: Process))
+pre trafoDecision2Node_backTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let condition1:Condition = matchTR.condition1 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theProcessA.processIdentifier->includes(assignment) and 
+assignment.left->includes(theProcessA) and 
+assignment.right->includes(condition1) and 
+condition1.process->includes(assignment) and 
+condition1.leftHandSide->includes(theProcessB) and 
+theProcessB.binaryOperatorLeft->includes(condition1) and 
+condition1.rightHandSide->includes(theProcessC) and 
+theProcessC.binaryOperatorRight->includes(condition1) and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theProcessB.ae2p->size() = 0 and
+theProcessC.ae2p->size() = 0 and
+condition1.ae2con->size() = 0
+
+post trafoDecision2Node_backTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let condition1:Condition = matchTR.condition1 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA})
+ and
+(DecisionNode.allInstances - DecisionNode.allInstances@pre)->exists(decisionNode|
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeB, theActivityEdgeC|
+decisionNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(decisionNode) and
+decisionNode.outEdge->includes(theActivityEdgeB) and
+theActivityEdgeB.source->includes(decisionNode) and
+decisionNode.outEdge->includes(theActivityEdgeC) and
+theActivityEdgeC.source->includes(decisionNode) and
+theActivityEdgeB.name<>oclUndefined(String) and
+theActivityEdgeC.guard = 'else' and
+decisionNode.outEdge->size()=2 and
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3|
+(AE2CON.allInstances - AE2CON.allInstances@pre)->exists(ae2con1|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeB.ae2con->includes(ae2con1) and
+ae2con1.ae->includes(theActivityEdgeB) and
+ae2con1.con->includes(condition1) and
+condition1.ae2con->includes(ae2con1)))))
+
+context RuleCollection::trafoForkNode_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, concurrency1: Concurrency, concurrency2: Concurrency, theProcessB: Process, theProcessC: Process, theProcessD: Process))
+pre trafoForkNode_backTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let concurrency1:Concurrency = matchTR.concurrency1 in
+let concurrency2:Concurrency = matchTR.concurrency2 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let theProcessD:Process = matchTR.theProcessD in
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theProcessA.processIdentifier->includes(assignment) and 
+assignment.left->includes(theProcessA) and 
+assignment.right->includes(concurrency1) and 
+concurrency1.process->includes(assignment) and 
+theProcessB.binaryOperatorLeft->includes(concurrency1) and 
+concurrency1.leftHandSide->includes(theProcessB) and 
+concurrency1.rightHandSide->includes(concurrency2) and 
+concurrency2.binaryOperatorRight->includes(concurrency1) and 
+concurrency2.leftHandSide->includes(theProcessC) and 
+theProcessC.binaryOperatorLeft->includes(concurrency2) and 
+theProcessD.binaryOperatorRight->includes(concurrency2) and 
+concurrency2.rightHandSide->includes(theProcessD) and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theProcessB.ae2p->size() = 0 and
+theProcessC.ae2p->size() = 0 and
+theProcessD.ae2p->size() = 0
+
+post trafoForkNode_backTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let concurrency1:Concurrency = matchTR.concurrency1 in
+let concurrency2:Concurrency = matchTR.concurrency2 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let theProcessD:Process = matchTR.theProcessD in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA})
+ and
+(ForkNode.allInstances - ForkNode.allInstances@pre)->exists(forkNode|
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeB, theActivityEdgeC, theActivityEdgeD|
+forkNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(forkNode) and
+forkNode.outEdge->includes(theActivityEdgeB) and
+theActivityEdgeB.source->includes(forkNode) and
+forkNode.outEdge->includes(theActivityEdgeC) and
+theActivityEdgeC.source->includes(forkNode) and
+theActivityEdgeD.source->includes(forkNode) and
+forkNode.outEdge->includes(theActivityEdgeD) and
+theActivityEdgeB.name<>oclUndefined(String) and
+theActivityEdgeC.name<>oclUndefined(String) and
+theActivityEdgeD.name<>oclUndefined(String) and
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3, ae2p4|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD))))
+
+context RuleCollection::trafoJoinNode_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P, ae2p3: AE2P),
+    matchTR: Tuple(theProcessA: Process, theProcessB: Process, theProcessC: Process, assignment1: ProcessAssignment, assignment2: ProcessAssignment, assignment3: ProcessAssignment, prefix1: Prefix, prefix2: Prefix, prefix3: Prefix, processJoin: Event, SKIP: Process, theProcessD: Process))
+pre trafoJoinNode_backTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSL.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSL.theActivityEdgeC in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let ae2p3:AE2P = matchCL.ae2p3 in
+let theProcessA:Process = matchTR.theProcessA in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let assignment1:ProcessAssignment = matchTR.assignment1 in
+let assignment2:ProcessAssignment = matchTR.assignment2 in
+let assignment3:ProcessAssignment = matchTR.assignment3 in
+let prefix1:Prefix = matchTR.prefix1 in
+let prefix2:Prefix = matchTR.prefix2 in
+let prefix3:Prefix = matchTR.prefix3 in
+let processJoin:Event = matchTR.processJoin in
+let SKIP:Process = matchTR.SKIP in
+let theProcessD:Process = matchTR.theProcessD in
+theActivityEdgeA.name<>oclUndefined(String) and 
+theActivityEdgeB.name<>oclUndefined(String) and 
+theActivityEdgeC.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theActivityEdgeB.target->size() < 1 and
+theActivityEdgeC.target->size() < 1 and
+theProcessA.processIdentifier->includes(assignment1) and 
+assignment1.left->includes(theProcessA) and 
+assignment1.right->includes(prefix1) and 
+prefix1.process->includes(assignment1) and 
+theProcessB.processIdentifier->includes(assignment2) and 
+assignment2.left->includes(theProcessB) and 
+prefix2.process->includes(assignment2) and 
+assignment2.right->includes(prefix2) and 
+theProcessC.processIdentifier->includes(assignment3) and 
+assignment3.left->includes(theProcessC) and 
+assignment3.right->includes(prefix3) and 
+prefix3.process->includes(assignment3) and 
+prefix1.event->includes(processJoin) and 
+processJoin.prefix->includes(prefix1) and 
+theProcessD.prefix->includes(prefix1) and 
+prefix1.processExpression->includes(theProcessD) and 
+processJoin.prefix->includes(prefix2) and 
+prefix2.event->includes(processJoin) and 
+SKIP.prefix->includes(prefix2) and 
+prefix2.processExpression->includes(SKIP) and 
+processJoin.prefix->includes(prefix3) and 
+prefix3.event->includes(processJoin) and 
+SKIP.prefix->includes(prefix3) and 
+prefix3.processExpression->includes(SKIP) and 
+SKIP.name='SKIP' and 
+processJoin.name='processJoin' and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and 
+ae2p2.ae->includes(theActivityEdgeB) and 
+theActivityEdgeB.ae2p->includes(ae2p2) and 
+ae2p2.p->includes(theProcessB) and 
+theProcessB.ae2p->includes(ae2p2) and 
+theActivityEdgeC.ae2p->includes(ae2p3) and 
+ae2p3.ae->includes(theActivityEdgeC) and 
+ae2p3.p->includes(theProcessC) and 
+theProcessC.ae2p->includes(ae2p3) and
+theProcessD.ae2p->size() = 0
+
+post trafoJoinNode_backTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSL.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSL.theActivityEdgeC in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let ae2p3:AE2P = matchCL.ae2p3 in
+let theProcessA:Process = matchTR.theProcessA in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let assignment1:ProcessAssignment = matchTR.assignment1 in
+let assignment2:ProcessAssignment = matchTR.assignment2 in
+let assignment3:ProcessAssignment = matchTR.assignment3 in
+let prefix1:Prefix = matchTR.prefix1 in
+let prefix2:Prefix = matchTR.prefix2 in
+let prefix3:Prefix = matchTR.prefix3 in
+let processJoin:Event = matchTR.processJoin in
+let SKIP:Process = matchTR.SKIP in
+let theProcessD:Process = matchTR.theProcessD in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA, theActivityEdgeB, theActivityEdgeC})
+ and
+(JoinNode.allInstances - JoinNode.allInstances@pre)->exists(joinNode|
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeD|
+theActivityEdgeA.target->includes(joinNode) and
+joinNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeB.target->includes(joinNode) and
+joinNode.inEdge->includes(theActivityEdgeB) and
+theActivityEdgeC.target->includes(joinNode) and
+joinNode.inEdge->includes(theActivityEdgeC) and
+joinNode.outEdge->includes(theActivityEdgeD) and
+theActivityEdgeD.source->includes(joinNode) and
+theActivityEdgeD.name<>oclUndefined(String) and
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and AE2P.allInstances->includesAll(Set {ae2p1, ae2p2, ae2p3})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p4|
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD))))
+
+context RuleCollection::trafoMergeNode_backTrafo (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P),
+    matchTR: Tuple(theProcessA: Process, theProcessB: Process, assignment1: ProcessAssignment, assignment2: ProcessAssignment, theProcessC: Process))
+pre trafoMergeNode_backTrafo_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSL.theActivityEdgeB in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let theProcessA:Process = matchTR.theProcessA in
+let theProcessB:Process = matchTR.theProcessB in
+let assignment1:ProcessAssignment = matchTR.assignment1 in
+let assignment2:ProcessAssignment = matchTR.assignment2 in
+let theProcessC:Process = matchTR.theProcessC in
+theActivityEdgeA.name<>oclUndefined(String) and 
+theActivityEdgeB.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theActivityEdgeB.target->size() < 1 and
+theProcessA.processIdentifier->includes(assignment1) and 
+assignment1.left->includes(theProcessA) and 
+theProcessC.process->includes(assignment1) and 
+assignment1.right->includes(theProcessC) and 
+theProcessB.processIdentifier->includes(assignment2) and 
+assignment2.left->includes(theProcessB) and 
+assignment2.right->includes(theProcessC) and 
+theProcessC.process->includes(assignment2) and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and 
+ae2p2.ae->includes(theActivityEdgeB) and 
+theActivityEdgeB.ae2p->includes(ae2p2) and 
+ae2p2.p->includes(theProcessB) and 
+theProcessB.ae2p->includes(ae2p2) and
+theProcessC.ae2p->size() = 0
+
+post trafoMergeNode_backTrafo_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSL.theActivityEdgeB in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let theProcessA:Process = matchTR.theProcessA in
+let theProcessB:Process = matchTR.theProcessB in
+let assignment1:ProcessAssignment = matchTR.assignment1 in
+let assignment2:ProcessAssignment = matchTR.assignment2 in
+let theProcessC:Process = matchTR.theProcessC in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA, theActivityEdgeB})
+ and
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeC|
+(MergeNode.allInstances - MergeNode.allInstances@pre)->exists(mergeNode|
+mergeNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(mergeNode) and
+mergeNode.inEdge->includes(theActivityEdgeB) and
+theActivityEdgeB.target->includes(mergeNode) and
+theActivityEdgeC.source->includes(mergeNode) and
+mergeNode.outEdge->includes(theActivityEdgeC) and
+theActivityEdgeC.name<>oclUndefined(String) and
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and AE2P.allInstances->includesAll(Set {ae2p1, ae2p2})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p3|
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3))))
+
+context RuleCollection::trafoInitialNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, init: InitialNode),
+    matchTR: Tuple(theProcessA: Process))
+pre trafoInitialNode_integration_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let init:InitialNode = matchSR.init in
+let theProcessA:Process = matchTR.theProcessA in
+theActivityEdgeA.source->includes(init) and 
+init.outEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.name<>oclUndefined(String) and 
+theActivityEdgeA.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeA.ae2p->size() = 0 and
+theProcessA.ae2p->size() = 0
+
+post trafoInitialNode_integration_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let init:InitialNode = matchSR.init in
+let theProcessA:Process = matchTR.theProcessA in
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p|
+ae2p.ae->includes(theActivityEdgeA) and
+theActivityEdgeA.ae2p->includes(ae2p) and
+theProcessA.ae2p->includes(ae2p) and
+ae2p.p->includes(theProcessA) and
+ae2p.p.name=ae2p.ae.name)
+
+context RuleCollection::trafoActionNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, action: Action, theActivityEdgeB: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, prefix: Prefix, theProcessB: Process, theEvent: Event))
+pre trafoActionNode_integration_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let action:Action = matchSR.action in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let prefix:Prefix = matchTR.prefix in
+let theProcessB:Process = matchTR.theProcessB in
+let theEvent:Event = matchTR.theEvent in
+theActivityEdgeA.name<>oclUndefined(String) and
+action.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(action) and 
+action.outEdge->includes(theActivityEdgeB) and 
+theActivityEdgeB.source->includes(action) and 
+action.name<>oclUndefined(String) and 
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and 
+action.cp_Action_AC2E->size()=0 and
+theProcessA.processIdentifier->includes(assignment) and 
+assignment.left->includes(theProcessA) and 
+assignment.right->includes(prefix) and 
+prefix.process->includes(assignment) and 
+prefix.event->includes(theEvent) and 
+theEvent.prefix->includes(prefix) and 
+theProcessB.prefix->includes(prefix) and 
+prefix.processExpression->includes(theProcessB) and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theActivityEdgeB.ae2p->size() = 0 and
+action.ac2e->size() = 0 and
+theProcessB.ae2p->size() = 0 and
+theEvent.ac2e->size() = 0
+
+post trafoActionNode_integration_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let action:Action = matchSR.action in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let prefix:Prefix = matchTR.prefix in
+let theProcessB:Process = matchTR.theProcessB in
+let theEvent:Event = matchTR.theEvent in
+AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2|
+(AC2E.allInstances - AC2E.allInstances@pre)->exists(ac2e|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+action.ac2e->includes(ac2e) and
+ac2e.act->includes(action) and
+ac2e.event->includes(theEvent) and
+theEvent.ac2e->includes(ac2e) and
+ac2e.event.name=ac2e.act.name))
+
+context RuleCollection::trafoFinalNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, finalNode: FinalNode),
+    matchCL: Tuple(ae2p: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, SKIP: Process))
+pre trafoFinalNode_integration_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let finalNode:FinalNode = matchSR.finalNode in
+let ae2p:AE2P = matchCL.ae2p in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let SKIP:Process = matchTR.SKIP in
+theActivityEdgeA.name<>oclUndefined(String) and
+finalNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(finalNode) and 
+finalNode.cp_FinalNode_F2P->size()=0 and
+assignment.right->includes(SKIP) and 
+SKIP.process->includes(assignment) and 
+theProcessA.processIdentifier->includes(assignment) and 
+assignment.left->includes(theProcessA) and 
+SKIP.name = 'SKIP' and
+ae2p.ae->includes(theActivityEdgeA) and 
+theActivityEdgeA.ae2p->includes(ae2p) and 
+theProcessA.ae2p->includes(ae2p) and 
+ae2p.p->includes(theProcessA) and
+finalNode.f2p->size() = 0 and
+SKIP.f2p->size() = 0
+
+post trafoFinalNode_integration_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let finalNode:FinalNode = matchSR.finalNode in
+let ae2p:AE2P = matchCL.ae2p in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let SKIP:Process = matchTR.SKIP in
+AE2P.allInstances->includesAll(Set {ae2p})
+ and
+(F2P.allInstances - F2P.allInstances@pre)->exists(f2p|
+f2p.f->includes(finalNode) and
+finalNode.f2p->includes(f2p) and
+SKIP.f2p->includes(f2p) and
+f2p.p->includes(SKIP))
+
+context RuleCollection::trafoDecision3Node_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, decisionNode: DecisionNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, condition1: Condition, condition2: Condition, theProcessB: Process, theProcessC: Process, theProcessD: Process))
+pre trafoDecision3Node_integration_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let decisionNode:DecisionNode = matchSR.decisionNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let condition1:Condition = matchTR.condition1 in
+let condition2:Condition = matchTR.condition2 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let theProcessD:Process = matchTR.theProcessD in
+theActivityEdgeA.name<>oclUndefined(String) and
+decisionNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(decisionNode) and 
+decisionNode.outEdge->includes(theActivityEdgeB) and 
+theActivityEdgeB.source->includes(decisionNode) and 
+decisionNode.outEdge->includes(theActivityEdgeC) and 
+theActivityEdgeC.source->includes(decisionNode) and 
+decisionNode.outEdge->includes(theActivityEdgeD) and 
+theActivityEdgeD.source->includes(decisionNode) and 
+theActivityEdgeB.name<>oclUndefined(String) and 
+theActivityEdgeC.name<>oclUndefined(String) and 
+theActivityEdgeD.guard = 'else' and 
+decisionNode.outEdge->size()=3 and 
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and 
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and 
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and
+theProcessA.processIdentifier->includes(assignment) and 
+assignment.left->includes(theProcessA) and 
+assignment.right->includes(condition1) and 
+condition1.process->includes(assignment) and 
+condition1.leftHandSide->includes(theProcessB) and 
+theProcessB.binaryOperatorLeft->includes(condition1) and 
+condition1.rightHandSide->includes(condition2) and 
+condition2.binaryOperatorRight->includes(condition1) and 
+condition2.leftHandSide->includes(theProcessC) and 
+theProcessC.binaryOperatorLeft->includes(condition2) and 
+theProcessD.binaryOperatorRight->includes(condition2) and 
+condition2.rightHandSide->includes(theProcessD) and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theActivityEdgeB.ae2p->size() = 0 and
+theActivityEdgeC.ae2p->size() = 0 and
+theActivityEdgeD.ae2p->size() = 0 and
+theActivityEdgeB.ae2con->size() = 0 and
+theActivityEdgeC.ae2con->size() = 0 and
+theProcessB.ae2p->size() = 0 and
+theProcessC.ae2p->size() = 0 and
+theProcessD.ae2p->size() = 0 and
+condition1.ae2con->size() = 0 and
+condition2.ae2con->size() = 0
+
+post trafoDecision3Node_integration_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let decisionNode:DecisionNode = matchSR.decisionNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let condition1:Condition = matchTR.condition1 in
+let condition2:Condition = matchTR.condition2 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let theProcessD:Process = matchTR.theProcessD in
+AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3, ae2p4|
+(AE2CON.allInstances - AE2CON.allInstances@pre)->exists(ae2con1, ae2con2|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD) and
+theActivityEdgeB.ae2con->includes(ae2con1) and
+ae2con1.ae->includes(theActivityEdgeB) and
+ae2con1.con->includes(condition1) and
+condition1.ae2con->includes(ae2con1) and
+ae2con2.ae->includes(theActivityEdgeC) and
+theActivityEdgeC.ae2con->includes(ae2con2) and
+condition2.ae2con->includes(ae2con2) and
+ae2con2.con->includes(condition2) and
+ae2con1.con.expression=ae2con1.ae.guard and
+ae2con2.con.expression=ae2con2.ae.guard))
+
+context RuleCollection::trafoDecision2Node_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, decisionNode: DecisionNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, condition1: Condition, theProcessB: Process, theProcessC: Process))
+pre trafoDecision2Node_integration_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let decisionNode:DecisionNode = matchSR.decisionNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let condition1:Condition = matchTR.condition1 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+theActivityEdgeA.name<>oclUndefined(String) and
+decisionNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(decisionNode) and 
+decisionNode.outEdge->includes(theActivityEdgeB) and 
+theActivityEdgeB.source->includes(decisionNode) and 
+decisionNode.outEdge->includes(theActivityEdgeC) and 
+theActivityEdgeC.source->includes(decisionNode) and 
+theActivityEdgeB.name<>oclUndefined(String) and 
+theActivityEdgeC.guard = 'else' and 
+decisionNode.outEdge->size()=2 and 
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and 
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and
+theProcessA.processIdentifier->includes(assignment) and 
+assignment.left->includes(theProcessA) and 
+assignment.right->includes(condition1) and 
+condition1.process->includes(assignment) and 
+condition1.leftHandSide->includes(theProcessB) and 
+theProcessB.binaryOperatorLeft->includes(condition1) and 
+condition1.rightHandSide->includes(theProcessC) and 
+theProcessC.binaryOperatorRight->includes(condition1) and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theActivityEdgeB.ae2p->size() = 0 and
+theActivityEdgeC.ae2p->size() = 0 and
+theActivityEdgeB.ae2con->size() = 0 and
+theProcessB.ae2p->size() = 0 and
+theProcessC.ae2p->size() = 0 and
+condition1.ae2con->size() = 0
+
+post trafoDecision2Node_integration_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let decisionNode:DecisionNode = matchSR.decisionNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let condition1:Condition = matchTR.condition1 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3|
+(AE2CON.allInstances - AE2CON.allInstances@pre)->exists(ae2con1|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeB.ae2con->includes(ae2con1) and
+ae2con1.ae->includes(theActivityEdgeB) and
+ae2con1.con->includes(condition1) and
+condition1.ae2con->includes(ae2con1)))
+
+context RuleCollection::trafoForkNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, forkNode: ForkNode, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTR: Tuple(theProcessA: Process, assignment: ProcessAssignment, concurrency1: Concurrency, concurrency2: Concurrency, theProcessB: Process, theProcessC: Process, theProcessD: Process))
+pre trafoForkNode_integration_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let forkNode:ForkNode = matchSR.forkNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let concurrency1:Concurrency = matchTR.concurrency1 in
+let concurrency2:Concurrency = matchTR.concurrency2 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let theProcessD:Process = matchTR.theProcessD in
+theActivityEdgeA.name<>oclUndefined(String) and
+forkNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(forkNode) and 
+forkNode.outEdge->includes(theActivityEdgeB) and 
+theActivityEdgeB.source->includes(forkNode) and 
+forkNode.outEdge->includes(theActivityEdgeC) and 
+theActivityEdgeC.source->includes(forkNode) and 
+theActivityEdgeD.source->includes(forkNode) and 
+forkNode.outEdge->includes(theActivityEdgeD) and 
+theActivityEdgeB.name<>oclUndefined(String) and 
+theActivityEdgeC.name<>oclUndefined(String) and 
+theActivityEdgeD.name<>oclUndefined(String) and 
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and 
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and 
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and
+theProcessA.processIdentifier->includes(assignment) and 
+assignment.left->includes(theProcessA) and 
+assignment.right->includes(concurrency1) and 
+concurrency1.process->includes(assignment) and 
+theProcessB.binaryOperatorLeft->includes(concurrency1) and 
+concurrency1.leftHandSide->includes(theProcessB) and 
+concurrency1.rightHandSide->includes(concurrency2) and 
+concurrency2.binaryOperatorRight->includes(concurrency1) and 
+concurrency2.leftHandSide->includes(theProcessC) and 
+theProcessC.binaryOperatorLeft->includes(concurrency2) and 
+theProcessD.binaryOperatorRight->includes(concurrency2) and 
+concurrency2.rightHandSide->includes(theProcessD) and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and
+theActivityEdgeB.ae2p->size() = 0 and
+theActivityEdgeC.ae2p->size() = 0 and
+theActivityEdgeD.ae2p->size() = 0 and
+theProcessB.ae2p->size() = 0 and
+theProcessC.ae2p->size() = 0 and
+theProcessD.ae2p->size() = 0
+
+post trafoForkNode_integration_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let forkNode:ForkNode = matchSR.forkNode in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTR.theProcessA in
+let assignment:ProcessAssignment = matchTR.assignment in
+let concurrency1:Concurrency = matchTR.concurrency1 in
+let concurrency2:Concurrency = matchTR.concurrency2 in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let theProcessD:Process = matchTR.theProcessD in
+AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3, ae2p4|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD))
+
+context RuleCollection::trafoJoinNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, joinNode: JoinNode, theActivityEdgeD: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P, ae2p3: AE2P),
+    matchTR: Tuple(theProcessA: Process, theProcessB: Process, theProcessC: Process, assignment1: ProcessAssignment, assignment2: ProcessAssignment, assignment3: ProcessAssignment, prefix1: Prefix, prefix2: Prefix, prefix3: Prefix, processJoin: Event, SKIP: Process, theProcessD: Process))
+pre trafoJoinNode_integration_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let joinNode:JoinNode = matchSR.joinNode in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let ae2p3:AE2P = matchCL.ae2p3 in
+let theProcessA:Process = matchTR.theProcessA in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let assignment1:ProcessAssignment = matchTR.assignment1 in
+let assignment2:ProcessAssignment = matchTR.assignment2 in
+let assignment3:ProcessAssignment = matchTR.assignment3 in
+let prefix1:Prefix = matchTR.prefix1 in
+let prefix2:Prefix = matchTR.prefix2 in
+let prefix3:Prefix = matchTR.prefix3 in
+let processJoin:Event = matchTR.processJoin in
+let SKIP:Process = matchTR.SKIP in
+let theProcessD:Process = matchTR.theProcessD in
+theActivityEdgeA.name<>oclUndefined(String) and 
+theActivityEdgeB.name<>oclUndefined(String) and 
+theActivityEdgeC.name<>oclUndefined(String) and
+theActivityEdgeA.target->includes(joinNode) and 
+joinNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeB.target->includes(joinNode) and 
+joinNode.inEdge->includes(theActivityEdgeB) and 
+theActivityEdgeC.target->includes(joinNode) and 
+joinNode.inEdge->includes(theActivityEdgeC) and 
+joinNode.outEdge->includes(theActivityEdgeD) and 
+theActivityEdgeD.source->includes(joinNode) and 
+theActivityEdgeD.name<>oclUndefined(String) and 
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and
+theProcessA.processIdentifier->includes(assignment1) and 
+assignment1.left->includes(theProcessA) and 
+assignment1.right->includes(prefix1) and 
+prefix1.process->includes(assignment1) and 
+theProcessB.processIdentifier->includes(assignment2) and 
+assignment2.left->includes(theProcessB) and 
+prefix2.process->includes(assignment2) and 
+assignment2.right->includes(prefix2) and 
+theProcessC.processIdentifier->includes(assignment3) and 
+assignment3.left->includes(theProcessC) and 
+assignment3.right->includes(prefix3) and 
+prefix3.process->includes(assignment3) and 
+prefix1.event->includes(processJoin) and 
+processJoin.prefix->includes(prefix1) and 
+theProcessD.prefix->includes(prefix1) and 
+prefix1.processExpression->includes(theProcessD) and 
+processJoin.prefix->includes(prefix2) and 
+prefix2.event->includes(processJoin) and 
+SKIP.prefix->includes(prefix2) and 
+prefix2.processExpression->includes(SKIP) and 
+processJoin.prefix->includes(prefix3) and 
+prefix3.event->includes(processJoin) and 
+SKIP.prefix->includes(prefix3) and 
+prefix3.processExpression->includes(SKIP) and 
+SKIP.name='SKIP' and 
+processJoin.name='processJoin' and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and 
+ae2p2.ae->includes(theActivityEdgeB) and 
+theActivityEdgeB.ae2p->includes(ae2p2) and 
+ae2p2.p->includes(theProcessB) and 
+theProcessB.ae2p->includes(ae2p2) and 
+theActivityEdgeC.ae2p->includes(ae2p3) and 
+ae2p3.ae->includes(theActivityEdgeC) and 
+ae2p3.p->includes(theProcessC) and 
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeD.ae2p->size() = 0 and
+theProcessD.ae2p->size() = 0
+
+post trafoJoinNode_integration_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let joinNode:JoinNode = matchSR.joinNode in
+let theActivityEdgeD:ActivityEdge = matchSR.theActivityEdgeD in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let ae2p3:AE2P = matchCL.ae2p3 in
+let theProcessA:Process = matchTR.theProcessA in
+let theProcessB:Process = matchTR.theProcessB in
+let theProcessC:Process = matchTR.theProcessC in
+let assignment1:ProcessAssignment = matchTR.assignment1 in
+let assignment2:ProcessAssignment = matchTR.assignment2 in
+let assignment3:ProcessAssignment = matchTR.assignment3 in
+let prefix1:Prefix = matchTR.prefix1 in
+let prefix2:Prefix = matchTR.prefix2 in
+let prefix3:Prefix = matchTR.prefix3 in
+let processJoin:Event = matchTR.processJoin in
+let SKIP:Process = matchTR.SKIP in
+let theProcessD:Process = matchTR.theProcessD in
+AE2P.allInstances->includesAll(Set {ae2p1, ae2p2, ae2p3})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p4|
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD))
+
+context RuleCollection::trafoMergeNode_integration (
+    matchSR: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge, mergeNode: MergeNode),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P),
+    matchTR: Tuple(theProcessA: Process, theProcessB: Process, assignment1: ProcessAssignment, assignment2: ProcessAssignment, theProcessC: Process))
+pre trafoMergeNode_integration_pre: 
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let mergeNode:MergeNode = matchSR.mergeNode in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let theProcessA:Process = matchTR.theProcessA in
+let theProcessB:Process = matchTR.theProcessB in
+let assignment1:ProcessAssignment = matchTR.assignment1 in
+let assignment2:ProcessAssignment = matchTR.assignment2 in
+let theProcessC:Process = matchTR.theProcessC in
+theActivityEdgeA.name<>oclUndefined(String) and 
+theActivityEdgeB.name<>oclUndefined(String) and
+mergeNode.inEdge->includes(theActivityEdgeA) and 
+theActivityEdgeA.target->includes(mergeNode) and 
+mergeNode.inEdge->includes(theActivityEdgeB) and 
+theActivityEdgeB.target->includes(mergeNode) and 
+theActivityEdgeC.source->includes(mergeNode) and 
+mergeNode.outEdge->includes(theActivityEdgeC) and 
+theActivityEdgeC.name<>oclUndefined(String) and 
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and
+theProcessA.processIdentifier->includes(assignment1) and 
+assignment1.left->includes(theProcessA) and 
+theProcessC.process->includes(assignment1) and 
+assignment1.right->includes(theProcessC) and 
+theProcessB.processIdentifier->includes(assignment2) and 
+assignment2.left->includes(theProcessB) and 
+assignment2.right->includes(theProcessC) and 
+theProcessC.process->includes(assignment2) and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and 
+ae2p2.ae->includes(theActivityEdgeB) and 
+theActivityEdgeB.ae2p->includes(ae2p2) and 
+ae2p2.p->includes(theProcessB) and 
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->size() = 0 and
+theProcessC.ae2p->size() = 0
+
+post trafoMergeNode_integration_post:
+let theActivityEdgeA:ActivityEdge = matchSR.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSR.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSR.theActivityEdgeC in
+let mergeNode:MergeNode = matchSR.mergeNode in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let theProcessA:Process = matchTR.theProcessA in
+let theProcessB:Process = matchTR.theProcessB in
+let assignment1:ProcessAssignment = matchTR.assignment1 in
+let assignment2:ProcessAssignment = matchTR.assignment2 in
+let theProcessC:Process = matchTR.theProcessC in
+AE2P.allInstances->includesAll(Set {ae2p1, ae2p2})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p3|
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3))
+
+context RuleCollection::trafoInitialNode_coEvol ()
+pre trafoInitialNode_coEvol_pre: 
+true
+
+
+post trafoInitialNode_coEvol_post:
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeA|
+(InitialNode.allInstances - InitialNode.allInstances@pre)->exists(init|
+theActivityEdgeA.source->includes(init) and
+init.outEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.cp_ActivityEdge_AE2P->size()=0 and (Process.allInstances - Process.allInstances@pre)->exists(theProcessA|
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p|
+ae2p.ae->includes(theActivityEdgeA) and
+theActivityEdgeA.ae2p->includes(ae2p) and
+theProcessA.ae2p->includes(ae2p) and
+ae2p.p->includes(theProcessA) and
+ae2p.p.name=ae2p.ae.name))))
+
+context RuleCollection::trafoActionNode_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+pre trafoActionNode_coEvol_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theProcessA.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA)
+
+post trafoActionNode_coEvol_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA})
+ and
+(Action.allInstances - Action.allInstances@pre)->exists(action|
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeB|
+action.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(action) and
+action.outEdge->includes(theActivityEdgeB) and
+theActivityEdgeB.source->includes(action) and
+action.name<>oclUndefined(String) and
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and
+action.cp_Action_AC2E->size()=0 and Process.allInstances->includesAll(Set {theProcessA})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment|
+(Prefix.allInstances - Prefix.allInstances@pre)->exists(prefix|
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessB|
+(Event.allInstances - Event.allInstances@pre)->exists(theEvent|
+theProcessA.processIdentifier->includes(assignment) and
+assignment.left->includes(theProcessA) and
+assignment.right->includes(prefix) and
+prefix.process->includes(assignment) and
+prefix.event->includes(theEvent) and
+theEvent.prefix->includes(prefix) and
+theProcessB.prefix->includes(prefix) and
+prefix.processExpression->includes(theProcessB) and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2|
+(AC2E.allInstances - AC2E.allInstances@pre)->exists(ac2e|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+action.ac2e->includes(ac2e) and
+ac2e.act->includes(action) and
+ac2e.event->includes(theEvent) and
+theEvent.ac2e->includes(ac2e) and
+ac2e.event.name=ac2e.act.name))))))))
+
+context RuleCollection::trafoFinalNode_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+pre trafoFinalNode_coEvol_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p:AE2P = matchCL.ae2p in
+let theProcessA:Process = matchTL.theProcessA in
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theProcessA.processIdentifier->size() < 1 and
+ae2p.ae->includes(theActivityEdgeA) and 
+theActivityEdgeA.ae2p->includes(ae2p) and 
+theProcessA.ae2p->includes(ae2p) and 
+ae2p.p->includes(theProcessA)
+
+post trafoFinalNode_coEvol_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p:AE2P = matchCL.ae2p in
+let theProcessA:Process = matchTL.theProcessA in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA})
+ and
+(FinalNode.allInstances - FinalNode.allInstances@pre)->exists(finalNode|
+finalNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(finalNode) and
+finalNode.cp_FinalNode_F2P->size()=0 and Process.allInstances->includesAll(Set {theProcessA})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment|
+(Process.allInstances - Process.allInstances@pre)->exists(SKIP|
+assignment.right->includes(SKIP) and
+SKIP.process->includes(assignment) and
+theProcessA.processIdentifier->includes(assignment) and
+assignment.left->includes(theProcessA) and
+SKIP.name = 'SKIP' and AE2P.allInstances->includesAll(Set {ae2p})
+ and
+(F2P.allInstances - F2P.allInstances@pre)->exists(f2p|
+f2p.f->includes(finalNode) and
+finalNode.f2p->includes(f2p) and
+SKIP.f2p->includes(f2p) and
+f2p.p->includes(SKIP)))))
+
+context RuleCollection::trafoDecision3Node_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+pre trafoDecision3Node_coEvol_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theProcessA.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA)
+
+post trafoDecision3Node_coEvol_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA})
+ and
+(DecisionNode.allInstances - DecisionNode.allInstances@pre)->exists(decisionNode|
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeB, theActivityEdgeC, theActivityEdgeD|
+decisionNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(decisionNode) and
+decisionNode.outEdge->includes(theActivityEdgeB) and
+theActivityEdgeB.source->includes(decisionNode) and
+decisionNode.outEdge->includes(theActivityEdgeC) and
+theActivityEdgeC.source->includes(decisionNode) and
+decisionNode.outEdge->includes(theActivityEdgeD) and
+theActivityEdgeD.source->includes(decisionNode) and
+theActivityEdgeB.name<>oclUndefined(String) and
+theActivityEdgeC.name<>oclUndefined(String) and
+theActivityEdgeD.guard = 'else' and
+decisionNode.outEdge->size()=3 and
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and Process.allInstances->includesAll(Set {theProcessA})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment|
+(Condition.allInstances - Condition.allInstances@pre)->exists(condition1, condition2|
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessB, theProcessC, theProcessD|
+theProcessA.processIdentifier->includes(assignment) and
+assignment.left->includes(theProcessA) and
+assignment.right->includes(condition1) and
+condition1.process->includes(assignment) and
+condition1.leftHandSide->includes(theProcessB) and
+theProcessB.binaryOperatorLeft->includes(condition1) and
+condition1.rightHandSide->includes(condition2) and
+condition2.binaryOperatorRight->includes(condition1) and
+condition2.leftHandSide->includes(theProcessC) and
+theProcessC.binaryOperatorLeft->includes(condition2) and
+theProcessD.binaryOperatorRight->includes(condition2) and
+condition2.rightHandSide->includes(theProcessD) and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3, ae2p4|
+(AE2CON.allInstances - AE2CON.allInstances@pre)->exists(ae2con1, ae2con2|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD) and
+theActivityEdgeB.ae2con->includes(ae2con1) and
+ae2con1.ae->includes(theActivityEdgeB) and
+ae2con1.con->includes(condition1) and
+condition1.ae2con->includes(ae2con1) and
+ae2con2.ae->includes(theActivityEdgeC) and
+theActivityEdgeC.ae2con->includes(ae2con2) and
+condition2.ae2con->includes(ae2con2) and
+ae2con2.con->includes(condition2) and
+ae2con1.con.expression=ae2con1.ae.guard and
+ae2con2.con.expression=ae2con2.ae.guard)))))))
+
+context RuleCollection::trafoDecision2Node_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+pre trafoDecision2Node_coEvol_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theProcessA.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA)
+
+post trafoDecision2Node_coEvol_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA})
+ and
+(DecisionNode.allInstances - DecisionNode.allInstances@pre)->exists(decisionNode|
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeB, theActivityEdgeC|
+decisionNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(decisionNode) and
+decisionNode.outEdge->includes(theActivityEdgeB) and
+theActivityEdgeB.source->includes(decisionNode) and
+decisionNode.outEdge->includes(theActivityEdgeC) and
+theActivityEdgeC.source->includes(decisionNode) and
+theActivityEdgeB.name<>oclUndefined(String) and
+theActivityEdgeC.guard = 'else' and
+decisionNode.outEdge->size()=2 and
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and Process.allInstances->includesAll(Set {theProcessA})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment|
+(Condition.allInstances - Condition.allInstances@pre)->exists(condition1|
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessB, theProcessC|
+theProcessA.processIdentifier->includes(assignment) and
+assignment.left->includes(theProcessA) and
+assignment.right->includes(condition1) and
+condition1.process->includes(assignment) and
+condition1.leftHandSide->includes(theProcessB) and
+theProcessB.binaryOperatorLeft->includes(condition1) and
+condition1.rightHandSide->includes(theProcessC) and
+theProcessC.binaryOperatorRight->includes(condition1) and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3|
+(AE2CON.allInstances - AE2CON.allInstances@pre)->exists(ae2con1|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeB.ae2con->includes(ae2con1) and
+ae2con1.ae->includes(theActivityEdgeB) and
+ae2con1.con->includes(condition1) and
+condition1.ae2con->includes(ae2con1))))))))
+
+context RuleCollection::trafoForkNode_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P),
+    matchTL: Tuple(theProcessA: Process))
+pre trafoForkNode_coEvol_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+theActivityEdgeA.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theProcessA.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA)
+
+post trafoForkNode_coEvol_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let theProcessA:Process = matchTL.theProcessA in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA})
+ and
+(ForkNode.allInstances - ForkNode.allInstances@pre)->exists(forkNode|
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeB, theActivityEdgeC, theActivityEdgeD|
+forkNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(forkNode) and
+forkNode.outEdge->includes(theActivityEdgeB) and
+theActivityEdgeB.source->includes(forkNode) and
+forkNode.outEdge->includes(theActivityEdgeC) and
+theActivityEdgeC.source->includes(forkNode) and
+theActivityEdgeD.source->includes(forkNode) and
+forkNode.outEdge->includes(theActivityEdgeD) and
+theActivityEdgeB.name<>oclUndefined(String) and
+theActivityEdgeC.name<>oclUndefined(String) and
+theActivityEdgeD.name<>oclUndefined(String) and
+theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and Process.allInstances->includesAll(Set {theProcessA})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment|
+(Concurrency.allInstances - Concurrency.allInstances@pre)->exists(concurrency1, concurrency2|
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessB, theProcessC, theProcessD|
+theProcessA.processIdentifier->includes(assignment) and
+assignment.left->includes(theProcessA) and
+assignment.right->includes(concurrency1) and
+concurrency1.process->includes(assignment) and
+theProcessB.binaryOperatorLeft->includes(concurrency1) and
+concurrency1.leftHandSide->includes(theProcessB) and
+concurrency1.rightHandSide->includes(concurrency2) and
+concurrency2.binaryOperatorRight->includes(concurrency1) and
+concurrency2.leftHandSide->includes(theProcessC) and
+theProcessC.binaryOperatorLeft->includes(concurrency2) and
+theProcessD.binaryOperatorRight->includes(concurrency2) and
+concurrency2.rightHandSide->includes(theProcessD) and AE2P.allInstances->includesAll(Set {ae2p1})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p2, ae2p3, ae2p4|
+ae2p2.ae->includes(theActivityEdgeB) and
+theActivityEdgeB.ae2p->includes(ae2p2) and
+ae2p2.p->includes(theProcessB) and
+theProcessB.ae2p->includes(ae2p2) and
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3) and
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD)))))))
+
+context RuleCollection::trafoJoinNode_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge, theActivityEdgeC: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P, ae2p3: AE2P),
+    matchTL: Tuple(theProcessA: Process, theProcessB: Process, theProcessC: Process))
+pre trafoJoinNode_coEvol_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSL.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSL.theActivityEdgeC in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let ae2p3:AE2P = matchCL.ae2p3 in
+let theProcessA:Process = matchTL.theProcessA in
+let theProcessB:Process = matchTL.theProcessB in
+let theProcessC:Process = matchTL.theProcessC in
+theActivityEdgeA.name<>oclUndefined(String) and 
+theActivityEdgeB.name<>oclUndefined(String) and 
+theActivityEdgeC.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theActivityEdgeB.target->size() < 1 and
+theActivityEdgeC.target->size() < 1 and
+theProcessA.processIdentifier->size() < 1 and
+theProcessB.processIdentifier->size() < 1 and
+theProcessC.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and 
+ae2p2.ae->includes(theActivityEdgeB) and 
+theActivityEdgeB.ae2p->includes(ae2p2) and 
+ae2p2.p->includes(theProcessB) and 
+theProcessB.ae2p->includes(ae2p2) and 
+theActivityEdgeC.ae2p->includes(ae2p3) and 
+ae2p3.ae->includes(theActivityEdgeC) and 
+ae2p3.p->includes(theProcessC) and 
+theProcessC.ae2p->includes(ae2p3)
+
+post trafoJoinNode_coEvol_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSL.theActivityEdgeB in
+let theActivityEdgeC:ActivityEdge = matchSL.theActivityEdgeC in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let ae2p3:AE2P = matchCL.ae2p3 in
+let theProcessA:Process = matchTL.theProcessA in
+let theProcessB:Process = matchTL.theProcessB in
+let theProcessC:Process = matchTL.theProcessC in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA, theActivityEdgeB, theActivityEdgeC})
+ and
+(JoinNode.allInstances - JoinNode.allInstances@pre)->exists(joinNode|
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeD|
+theActivityEdgeA.target->includes(joinNode) and
+joinNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeB.target->includes(joinNode) and
+joinNode.inEdge->includes(theActivityEdgeB) and
+theActivityEdgeC.target->includes(joinNode) and
+joinNode.inEdge->includes(theActivityEdgeC) and
+joinNode.outEdge->includes(theActivityEdgeD) and
+theActivityEdgeD.source->includes(joinNode) and
+theActivityEdgeD.name<>oclUndefined(String) and
+theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0 and Process.allInstances->includesAll(Set {theProcessA, theProcessB, theProcessC})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment1, assignment2, assignment3|
+(Prefix.allInstances - Prefix.allInstances@pre)->exists(prefix1, prefix2, prefix3|
+(Event.allInstances - Event.allInstances@pre)->exists(processJoin|
+(Process.allInstances - Process.allInstances@pre)->exists(SKIP, theProcessD|
+theProcessA.processIdentifier->includes(assignment1) and
+assignment1.left->includes(theProcessA) and
+assignment1.right->includes(prefix1) and
+prefix1.process->includes(assignment1) and
+theProcessB.processIdentifier->includes(assignment2) and
+assignment2.left->includes(theProcessB) and
+prefix2.process->includes(assignment2) and
+assignment2.right->includes(prefix2) and
+theProcessC.processIdentifier->includes(assignment3) and
+assignment3.left->includes(theProcessC) and
+assignment3.right->includes(prefix3) and
+prefix3.process->includes(assignment3) and
+prefix1.event->includes(processJoin) and
+processJoin.prefix->includes(prefix1) and
+theProcessD.prefix->includes(prefix1) and
+prefix1.processExpression->includes(theProcessD) and
+processJoin.prefix->includes(prefix2) and
+prefix2.event->includes(processJoin) and
+SKIP.prefix->includes(prefix2) and
+prefix2.processExpression->includes(SKIP) and
+processJoin.prefix->includes(prefix3) and
+prefix3.event->includes(processJoin) and
+SKIP.prefix->includes(prefix3) and
+prefix3.processExpression->includes(SKIP) and
+SKIP.name='SKIP' and
+processJoin.name='processJoin' and AE2P.allInstances->includesAll(Set {ae2p1, ae2p2, ae2p3})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p4|
+theActivityEdgeD.ae2p->includes(ae2p4) and
+ae2p4.ae->includes(theActivityEdgeD) and
+theProcessD.ae2p->includes(ae2p4) and
+ae2p4.p->includes(theProcessD))))))))
+
+context RuleCollection::trafoMergeNode_coEvol (
+    matchSL: Tuple(theActivityEdgeA: ActivityEdge, theActivityEdgeB: ActivityEdge),
+    matchCL: Tuple(ae2p1: AE2P, ae2p2: AE2P),
+    matchTL: Tuple(theProcessA: Process, theProcessB: Process))
+pre trafoMergeNode_coEvol_pre: 
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSL.theActivityEdgeB in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let theProcessA:Process = matchTL.theProcessA in
+let theProcessB:Process = matchTL.theProcessB in
+theActivityEdgeA.name<>oclUndefined(String) and 
+theActivityEdgeB.name<>oclUndefined(String) and
+theActivityEdgeA.target->size() < 1 and
+theActivityEdgeB.target->size() < 1 and
+theProcessA.processIdentifier->size() < 1 and
+theProcessB.processIdentifier->size() < 1 and
+theActivityEdgeA.ae2p->includes(ae2p1) and 
+ae2p1.ae->includes(theActivityEdgeA) and 
+theProcessA.ae2p->includes(ae2p1) and 
+ae2p1.p->includes(theProcessA) and 
+ae2p2.ae->includes(theActivityEdgeB) and 
+theActivityEdgeB.ae2p->includes(ae2p2) and 
+ae2p2.p->includes(theProcessB) and 
+theProcessB.ae2p->includes(ae2p2)
+
+post trafoMergeNode_coEvol_post:
+let theActivityEdgeA:ActivityEdge = matchSL.theActivityEdgeA in
+let theActivityEdgeB:ActivityEdge = matchSL.theActivityEdgeB in
+let ae2p1:AE2P = matchCL.ae2p1 in
+let ae2p2:AE2P = matchCL.ae2p2 in
+let theProcessA:Process = matchTL.theProcessA in
+let theProcessB:Process = matchTL.theProcessB in
+ActivityEdge.allInstances->includesAll(Set {theActivityEdgeA, theActivityEdgeB})
+ and
+(ActivityEdge.allInstances - ActivityEdge.allInstances@pre)->exists(theActivityEdgeC|
+(MergeNode.allInstances - MergeNode.allInstances@pre)->exists(mergeNode|
+mergeNode.inEdge->includes(theActivityEdgeA) and
+theActivityEdgeA.target->includes(mergeNode) and
+mergeNode.inEdge->includes(theActivityEdgeB) and
+theActivityEdgeB.target->includes(mergeNode) and
+theActivityEdgeC.source->includes(mergeNode) and
+mergeNode.outEdge->includes(theActivityEdgeC) and
+theActivityEdgeC.name<>oclUndefined(String) and
+theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0 and Process.allInstances->includesAll(Set {theProcessA, theProcessB})
+ and
+(ProcessAssignment.allInstances - ProcessAssignment.allInstances@pre)->exists(assignment1, assignment2|
+(Process.allInstances - Process.allInstances@pre)->exists(theProcessC|
+theProcessA.processIdentifier->includes(assignment1) and
+assignment1.left->includes(theProcessA) and
+theProcessC.process->includes(assignment1) and
+assignment1.right->includes(theProcessC) and
+theProcessB.processIdentifier->includes(assignment2) and
+assignment2.left->includes(theProcessB) and
+assignment2.right->includes(theProcessC) and
+theProcessC.process->includes(assignment2) and AE2P.allInstances->includesAll(Set {ae2p1, ae2p2})
+ and
+(AE2P.allInstances - AE2P.allInstances@pre)->exists(ae2p3|
+theActivityEdgeC.ae2p->includes(ae2p3) and
+ae2p3.ae->includes(theActivityEdgeC) and
+ae2p3.p->includes(theProcessC) and
+theProcessC.ae2p->includes(ae2p3))))))

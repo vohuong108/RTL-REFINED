@@ -1,0 +1,10 @@
+model ModelFindingTest03
+
+class DomainClass
+operations
+	inc(a: Integer)
+end
+
+constraints
+context DomainClass::inc(a: Integer)
+post postInc: DomainClass.allInstances->size() = a

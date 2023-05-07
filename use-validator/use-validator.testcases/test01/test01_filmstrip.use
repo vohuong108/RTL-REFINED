@@ -1,0 +1,135 @@
+model ModelFindingTest01
+
+
+aggregation PredSuccClassA between
+  ClassA[0..1] role predClassA
+  ClassA[0..1] role succClassA
+end
+
+class Snapshot
+operations
+  copy() : Snapshot
+    begin
+      declare s : Snapshot;
+      s := new Snapshot;
+      for cl in self.classA do 
+        declare x : ClassA;
+        x := new ClassA;
+        insert (cl,x) into PredSuccClassA;
+        insert (s,x) into SnapshotClassA;
+      end;
+      for cl in self.domainClass do 
+        declare x : DomainClass;
+        x := new DomainClass;
+        insert (cl,x) into PredSuccDomainClass;
+        insert (s,x) into SnapshotDomainClass;
+      end;
+      ;
+      for cl in s.classA do 
+        cl.changedAttr := cl.predClassA.changedAttr;
+        cl.curStep := cl.predClassA.curStep;
+        cl.obj := cl.predClassA.obj.succDomainClass;
+        cl.unchanedAttr := cl.predClassA.unchanedAttr;
+      end;
+      for cl in s.domainClass do 
+        cl.isPrbl := cl.predDomainClass.isPrbl;
+      end;
+      result := s;
+    end
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+abstract class OperationCall
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+aggregation PredSuccDomainClass between
+  DomainClass[0..1] role predDomainClass
+  DomainClass[0..1] role succDomainClass
+end
+
+composition SnapshotDomainClass between
+  Snapshot[1] role snapshotDomainClass
+  DomainClass[*]
+end
+
+class step1_ClassAOpC < ClassAOpC
+attributes
+  a : Integer
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OperationCall[0..1]
+end
+
+class step2_ClassAOpC < ClassAOpC
+attributes
+  b : Integer
+end
+
+composition SnapshotClassA between
+  Snapshot[1] role snapshotClassA
+  ClassA[*]
+end
+
+abstract class ClassAOpC < OperationCall
+attributes
+  aSelf : ClassA
+end
+
+class DomainClass
+attributes
+  isPrbl : Boolean
+end
+
+class ClassA
+attributes
+  obj : DomainClass
+  changedAttr : Integer
+  unchanedAttr : Integer
+  curStep : String
+operations
+  step1(a : Integer)
+  step2(b : Integer)
+end
+
+constraints
+context ClassA inv validSnapshotLinking:
+  (self.succClassA.isDefined() implies (self.succClassA.snapshotClassA = self.snapshotClassA.succ()))
+
+context ClassAOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context ClassAOpC inv aSelfInPred:
+  (self.aSelf.snapshotClassA = self.pred())
+
+context DomainClass inv validSnapshotLinking:
+  (self.succDomainClass.isDefined() implies (self.succDomainClass.snapshotDomainClass = self.snapshotDomainClass.succ()))
+
+context OperationCall inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OperationCall.allInstances()->forAll( op:OperationCall | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context Snapshot inv cycleFree:
+  Set{self.succ()}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+
+context step1_ClassAOpC inv post_post1:
+  ((((aSelf.succClassA.changedAttr = (aSelf.succClassA.predClassA.changedAttr + a)) and (aSelf.succClassA.obj.isPrbl = true)) and (aSelf.succClassA.predClassA.curStep = '')) and (aSelf.succClassA.curStep = 'step1'))
+
+context step2_ClassAOpC inv post_post2:
+  ((((aSelf.succClassA.changedAttr = (aSelf.succClassA.predClassA.changedAttr - b)) and (aSelf.succClassA.obj.isPrbl = false)) and (aSelf.succClassA.predClassA.curStep = 'step1')) and (aSelf.succClassA.curStep = 'step2'))
+
+context Snapshot::copy() : Snapshot
+  pre uncopied: self.succ().isUndefined()
+

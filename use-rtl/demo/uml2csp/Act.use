@@ -1,0 +1,58 @@
+model Act
+
+class ActivityEdge
+attributes
+  name : String
+  guard : String
+end
+
+class Action < ActivityNode
+attributes
+  name : String
+end
+
+class ActivityNode
+end
+
+class DecisionNode < ActivityNode
+end
+
+class ForkNode < ActivityNode
+end
+
+class FinalNode < ActivityNode
+end
+
+class InitialNode < ActivityNode
+end
+
+class JoinNode < ActivityNode
+end
+
+class MergeNode < ActivityNode
+end
+
+
+association ConnectsFrom between
+  ActivityEdge[0..*] role outEdge
+  ActivityNode[0..1] role source
+end
+association ConnectsTo between
+  ActivityEdge[0..*] role inEdge
+  ActivityNode[0..1] role target
+end
+
+constraints
+
+-- invariants on UML activity diagrams
+context InitialNode inv oneInitialNode:
+  InitialNode.allInstances->size()=1
+context InitialNode inv hasOutgoingEdge:
+  outEdge->size()>0
+context FinalNode inv hasIncomingEdge:
+  inEdge->size()>0
+context DecisionNode inv hasAtLeastTwoOutgoingEdges:
+  outEdge->size()>=2
+context DecisionNode inv hasDifferentGuardsOnOutgoingEdges:
+  outEdge->forAll(e1,e2|e1<>e2 implies e1.guard<>e2.guard)
+

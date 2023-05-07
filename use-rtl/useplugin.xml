@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?use version="3.0.0"?>
+<plugin name="RestrictedGraphTrafo" version="0.1">
+	<actions>
+		<action label="RTL compiler" icon="resources/rtl.png"
+			class="org.uet.dse.rtlplus.actions.ActionOpenRTL"
+			tooltip="RTL Parser"
+			menu="RTL plugin"
+			menuitem="RTL Parser"
+			toolbaritem="RTL Parser"
+			id="org.uet.dse.rtlplus.actions.ActionOpenRTL">
+		</action>
+		<action label="Run matches automatically" icon="resources/autorun.png"
+			class="org.uet.dse.rtlplus.actions.ActionAutoRunMatches"
+			tooltip="Run matches automatically"
+			menu="RTL plugin"
+			menuitem="Run matches automatically"
+			toolbaritem="Run matches automatically"
+			id="org.uet.dse.rtlplus.actions.ActionAutoRunMatches">
+		</action>
+		<action label="Find matches" icon="resources/next.png"
+			class="org.uet.dse.rtlplus.actions.ActionFindMatches"
+			tooltip="Find matches"
+			menu="RTL plugin"
+			menuitem="Find matches"
+			toolbaritem="Find matches"
+			id="org.uet.dse.rtlplus.actions.ActionFindMatches">
+		</action>
+		<action label="Show rule list" 
+			icon="resources/list.png" 
+			class="org.uet.dse.rtlplus.actions.ActionShowRuleList" 
+			tooltip="Show rule list" 
+			menu="RTL plugin" 
+			menuitem="Show rule list"
+			toolbaritem="Show rule list" 
+			id="org.uet.dse.rtlplus.actions.ActionShowRuleList">
+		</action>
+		<action label="Show object diagram" 
+			icon="resources/diagram.png" 
+			class="org.uet.dse.rtlplus.actions.ActionShowObjectDiagram" 
+			tooltip="Show object diagram"
+			menu="RTL plugin" 
+			menuitem="Show object diagram"
+			toolbaritem="Show object diagram"
+			id="org.uet.dse.rtlplus.actions.ActionShowObjectDiagram">
+		</action>
+		<action label="Incremental update" 
+			icon="resources/delta.png" 
+			class="org.uet.dse.rtlplus.actions.ActionIncrementalUpdate" 
+			tooltip="Incremental update"
+			menu="RTL plugin" 
+			menuitem="Incremental update"
+			toolbaritem="Incremental update"
+			id="org.uet.dse.rtlplus.actions.ActionIncrementalUpdate">
+		</action>
+		<!-- <action label="Integration check" 
+			icon="resources/check.png" 
+			class="org.uet.dse.rtlplus.actions.ActionIntegrationCheck" 
+			tooltip="Integration check"
+			menu="RTL plugin" 
+			menuitem="Integration check"
+			toolbaritem="Integration check"
+			id="org.uet.dse.rtlplus.actions.ActionIntegrationCheck">
+		</action> -->
+		<action label="Execute scenario" 
+			icon="resources/scenario.png" 
+			class="org.uet.dse.rtlplus.actions.ActionRunCoevolScenario" 
+			tooltip="Execute scenario" 
+			menu="RTL plugin" 
+			menuitem="Execute scenario" 
+			toolbaritem="Execute scenario" 
+			id="org.uet.dse.rtlplus.actions.ActionRunCoevolScenario">
+		</action>
+		<action label="Export model" 
+			icon="resources/export.png" 
+			class="org.uet.dse.rtlplus.actions.ActionExportModel" 
+			tooltip="Export model" 
+			menu="RTL plugin" 
+			menuitem="Export model" 
+			toolbaritem="Export model" 
+			id="org.uet.dse.rtlplus.actions.ActionExportModel">
+		</action>
+		<action label="Validation with classifying terms" 
+			icon="resources/test.png" 
+			class="org.uet.dse.rtlplus.actions.ActionTestWithCT" 
+			tooltip="Validation with classifying terms" 
+			menu="RTL plugin" 
+			menuitem="Validation with classifying terms" 
+			toolbaritem="Validation with classifying terms" 
+			id="org.uet.dse.rtlplus.actions.ActionTestWithCT">
+		</action>
+	</actions>
+</plugin>

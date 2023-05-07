@@ -1,0 +1,241 @@
+package org.tzi.kodkod.clever.csp;
+
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForBooleanAndBooleanTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForBooleanImpliesBooleanTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForBooleanOrBooleanTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForBooleanXOrBooleanTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerEqualIntegerTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerEqualRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerGreaterThanEqualIntegerTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerGreaterThanEqualRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerGreaterThanIntegerTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerGreaterThanRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerLessThanEqualIntegerTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerLessThanEqualRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerLessThanIntegerTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerLessThanRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerUnequalIntegerTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForIntegerUnequalRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForNegateBooleanTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForRealEqualRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForRealGreaterThanEqualIntegerTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForRealGreaterThanEqualRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForRealGreaterThanIntegerTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForRealGreaterThanRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForRealLessThanEqualIntegerTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForRealLessThanEqualRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForRealLessThanIntegerTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForRealLessThanRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanResultForRealUnequalRealTerm;
+import org.tzi.kodkod.clever.csp.bool.BooleanVariable;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForAbsoluteIntegerTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForCeilRealTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForFloorRealTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForIntegerAdditionIntegerTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForIntegerDivisionIntegerTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForIntegerExponentiationIntegerTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForIntegerModuloIntegerTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForIntegerMultiplicationIntegerTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForIntegerSubtractionIntegerTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForMaxIntegerIntegerTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForMinIntegerTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForNegateIntegerTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerResultForRoundRealTerm;
+import org.tzi.kodkod.clever.csp.integer.IntegerVariable;
+import org.tzi.kodkod.clever.csp.real.RealResultForCeilRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForFloorRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForIntegerLogarithmIntegerTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForIntegerLogarithmRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForMaxRealIntegerTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForMaxRealRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForMinRealIntegerTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForMinRealRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForNegateRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForRealAdditionIntegerTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForRealAdditionRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForRealDivisionIntegerTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForRealDivisionRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForRealLogarithmIntegerTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForRealLogarithmRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForRealMultiplicationIntegerTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForRealMultiplicationRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForRealSubtractionIntegerTerm;
+import org.tzi.kodkod.clever.csp.real.RealResultForRealSubtractionRealTerm;
+import org.tzi.kodkod.clever.csp.real.RealVariable;
+
+/**
+ * Visitor for Terms ({@link ITerm}). The visitor must implement a specific
+ * handling for selected types of terms.
+ * 
+ * @author Jan Prien
+ *
+ */
+public interface ITermVisitor {
+
+	void visitBooleanResultForBooleanAndBooleanTerm(
+			BooleanResultForBooleanAndBooleanTerm booleanResultForBooleanAndBooleanTerm);
+
+	void visitBooleanResultForBooleanImpliesBooleanTerm(
+			BooleanResultForBooleanImpliesBooleanTerm booleanResultForBooleanImpliesBooleanTerm);
+
+	void visitBooleanResultForBooleanOrBooleanTerm(
+			BooleanResultForBooleanOrBooleanTerm booleanResultForBooleanOrBooleanTerm);
+
+	void visitBooleanResultForBooleanXOrBooleanTerm(
+			BooleanResultForBooleanXOrBooleanTerm booleanResultForBooleanXOrBooleanTerm);
+
+	void visitBooleanResultForIntegerEqualIntegerTerm(
+			BooleanResultForIntegerEqualIntegerTerm booleanResultForIntegerEqualIntegerTerm);
+
+	void visitBooleanResultForIntegerEqualRealTerm(
+			BooleanResultForIntegerEqualRealTerm booleanResultForIntegerEqualRealTerm);
+
+	void visitBooleanResultForIntegerGreaterThanEqualIntegerTerm(
+			BooleanResultForIntegerGreaterThanEqualIntegerTerm booleanResultForIntegerGreaterThanEqualIntegerTerm);
+
+	void visitBooleanResultForIntegerGreaterThanEqualRealTerm(
+			BooleanResultForIntegerGreaterThanEqualRealTerm booleanResultForIntegerGreaterThanEqualRealTerm);
+
+	void visitBooleanResultForIntegerGreaterThanIntegerTerm(
+			BooleanResultForIntegerGreaterThanIntegerTerm booleanResultForIntegerGreaterThanIntegerTerm);
+
+	void visitBooleanResultForIntegerGreaterThanRealTerm(
+			BooleanResultForIntegerGreaterThanRealTerm booleanResultForIntegerGreaterThanRealTerm);
+
+	void visitBooleanVariable(BooleanVariable booleanVariable);
+
+	void visitIntegerVariable(IntegerVariable integerVariable);
+
+	void visitRealVariable(RealVariable realVariable);
+
+	void visitBooleanResultForIntegerLessThanEqualIntegerTerm(
+			BooleanResultForIntegerLessThanEqualIntegerTerm booleanResultForIntegerLessThanEqualIntegerTerm);
+
+	void visitBooleanResultForIntegerLessThanEqualRealTerm(
+			BooleanResultForIntegerLessThanEqualRealTerm booleanResultForIntegerLessThanEqualRealTerm);
+
+	void visitBooleanResultForIntegerLessThanIntegerTerm(
+			BooleanResultForIntegerLessThanIntegerTerm booleanResultForIntegerLessThanIntegerTerm);
+
+	void visitBooleanResultForIntegerLessThanRealTerm(
+			BooleanResultForIntegerLessThanRealTerm booleanResultForIntegerLessThanRealTerm);
+
+	void visitBooleanResultForIntegerUnequalIntegerTerm(
+			BooleanResultForIntegerUnequalIntegerTerm booleanResultForIntegerUnequalIntegerTerm);
+
+	void visitBooleanResultForIntegerUnequalRealTerm(
+			BooleanResultForIntegerUnequalRealTerm booleanResultForIntegerUnequalRealTerm);
+
+	void visitBooleanResultForNegateBooleanTerm(BooleanResultForNegateBooleanTerm booleanResultForNegateBooleanTerm);
+
+	void visitBooleanResultForRealEqualRealTerm(BooleanResultForRealEqualRealTerm booleanResultForRealEqualRealTerm);
+
+	void visitBooleanResultForRealGreaterThanEqualIntegerTerm(
+			BooleanResultForRealGreaterThanEqualIntegerTerm booleanResultForRealGreaterThanEqualIntegerTerm);
+
+	void visitBooleanResultForRealGreaterThanEqualRealTerm(
+			BooleanResultForRealGreaterThanEqualRealTerm booleanResultForRealGreaterThanEqualRealTerm);
+
+	void visitBooleanResultForRealGreaterThanIntegerTerm(
+			BooleanResultForRealGreaterThanIntegerTerm booleanResultForRealGreaterThanIntegerTerm);
+
+	void visitBooleanResultForRealGreaterThanRealTerm(
+			BooleanResultForRealGreaterThanRealTerm booleanResultForRealGreaterThanRealTerm);
+
+	void visitBooleanResultForRealLessThanEqualIntegerTerm(
+			BooleanResultForRealLessThanEqualIntegerTerm booleanResultForRealLessThanEqualIntegerTerm);
+
+	void visitIntegerResultForIntegerModuloIntegerTerm(
+			IntegerResultForIntegerModuloIntegerTerm integerResultForIntegerModuloIntegerTerm);
+
+	void visitIntegerResultForIntegerSubtractionIntegerTerm(
+			IntegerResultForIntegerSubtractionIntegerTerm integerResultForIntegerSubtractionIntegerTerm);
+
+	void visitIntegerResultForMaxIntegerIntegerTerm(
+			IntegerResultForMaxIntegerIntegerTerm integerResultForMaxIntegerIntegerTerm);
+
+	void visitIntegerResultForAbsoluteIntegerTerm(
+			IntegerResultForAbsoluteIntegerTerm integerResultForIntegerResultForAbsoluteIntegerTerm);
+
+	void visitIntegerResultForMinIntegerTerm(IntegerResultForMinIntegerTerm integerResultForMinIntegerTerm);
+
+	void visitIntegerResultForNegateIntegerTerm(IntegerResultForNegateIntegerTerm integerResultForNegateIntegerTerm);
+
+	void visitRealResultForFloorRealTerm(RealResultForFloorRealTerm realResultForFloorRealTerm);
+
+	void visitRealResultForCeilRealTerm(RealResultForCeilRealTerm realResultForCeilRealTerm);
+
+	void visitRealResultForIntegerLogarithmRealTerm(
+			RealResultForIntegerLogarithmRealTerm realResultForIntegerLogarithmRealTerm);
+
+	void visitRealResultForIntegerLogarithmIntegerTerm(
+			RealResultForIntegerLogarithmIntegerTerm realResultForIntegerLogarithmIntegerTerm);
+
+	void visitRealResultForMaxRealRealTerm(RealResultForMaxRealRealTerm realResultForMaxRealRealTerm);
+
+	void visitRealResultForMinRealIntegerTerm(RealResultForMinRealIntegerTerm realResultForMinRealIntegerTerm);
+
+	void visitRealResultForRealDivisionIntegerTerm(
+			RealResultForRealDivisionIntegerTerm realResultForRealDivisionIntegerTerm);
+
+	void visitRealResultForNegateRealTerm(RealResultForNegateRealTerm realResultForNegateRealTerm);
+
+	void visitIntegerResultForIntegerExponentiationIntegerTerm(
+			IntegerResultForIntegerExponentiationIntegerTerm integerResultForIntegerlExponentiationIntegerTerm);
+
+	void visitRealResultForMaxRealIntegerTerm(RealResultForMaxRealIntegerTerm realResultForMaxRealIntegerTerm);
+
+	void visitRealResultForRealAdditionIntegerTerm(
+			RealResultForRealAdditionIntegerTerm realResultForRealAdditionIntegerTerm);
+
+	void visitRealResultForRealAdditionRealTerm(RealResultForRealAdditionRealTerm realResultForRealAdditionRealTerm);
+
+	void visitRealResultForRealDivisionRealTerm(RealResultForRealDivisionRealTerm realResultForRealDivisionRealTerm);
+
+	void visitRealResultForRealLogarithmIntegerTerm(
+			RealResultForRealLogarithmIntegerTerm realResultForRealLogarithmIntegerTerm);
+
+	void visitRealResultForRealLogarithmRealTerm(RealResultForRealLogarithmRealTerm realResultForRealLogarithmRealTerm);
+
+	void visitIntegerResultForRoundRealTerm(IntegerResultForRoundRealTerm integerResultForRoundRealTerm);
+
+	void visitIntegerResultForFloorRealTerm(IntegerResultForFloorRealTerm integerResultForFloorRealTerm);
+
+	void visitBooleanResultForRealUnequalRealTerm(
+			BooleanResultForRealUnequalRealTerm booleanResultForRealUnequalRealTerm);
+
+	void visitBooleanResultForRealLessThanEqualRealTerm(
+			BooleanResultForRealLessThanEqualRealTerm booleanResultForRealLessThanEqualRealTerm);
+
+	void visitBooleanResultForRealLessThanRealTerm(
+			BooleanResultForRealLessThanRealTerm booleanResultForRealLessThanRealTerm);
+
+	void visitIntegerResultForIntegerMultiplicationIntegerTerm(
+			IntegerResultForIntegerMultiplicationIntegerTerm integerResultForIntegerMultiplicationIntegerTerm);
+
+	void visitBooleanResultForRealLessThanIntegerTerm(
+			BooleanResultForRealLessThanIntegerTerm booleanResultForRealLessThanIntegerTerm);
+
+	void visitIntegerResultForIntegerDivisionIntegerTerm(
+			IntegerResultForIntegerDivisionIntegerTerm integerResultForIntegerDivisionIntegerTerm);
+
+	void visitIntegerResultForCeilRealTerm(IntegerResultForCeilRealTerm integerResultForCeilRealTerm);
+
+	void visitIntegerResultForIntegerAdditionIntegerTerm(
+			IntegerResultForIntegerAdditionIntegerTerm integerResultForIntegerAdditionIntegerTerm);
+
+	void visitRealResultForMinRealRealTerm(RealResultForMinRealRealTerm realResultForMinRealRealTerm);
+
+	void visitRealResultForRealMultiplicationIntegerTerm(
+			RealResultForRealMultiplicationIntegerTerm realResultForRealMultiplicationIntegerTerm);
+
+	void visitRealResultForRealMultiplicationRealTerm(
+			RealResultForRealMultiplicationRealTerm realResultForRealMultiplicationRealTerm);
+
+	void visitRealResultForRealSubtractionIntegerTerm(
+			RealResultForRealSubtractionIntegerTerm realResultForRealSubtractionIntegerTerm);
+
+	void visitRealResultForRealSubtractionRealTerm(
+			RealResultForRealSubtractionRealTerm realResultForRealSubtractionRealTerm);
+
+}

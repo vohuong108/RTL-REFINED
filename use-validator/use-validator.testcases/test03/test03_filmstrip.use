@@ -1,0 +1,88 @@
+model ModelFindingTest03
+
+
+class Snapshot
+operations
+  copy() : Snapshot
+    begin
+      declare s : Snapshot;
+      s := new Snapshot;
+      for cl in self.domainClass do 
+        declare x : DomainClass;
+        x := new DomainClass;
+        insert (cl,x) into PredSuccDomainClass;
+        insert (s,x) into SnapshotDomainClass;
+      end;
+      ;
+      result := s;
+    end
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+abstract class DomainClassOpC < OperationCall
+attributes
+  aSelf : DomainClass
+end
+
+abstract class OperationCall
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+aggregation PredSuccDomainClass between
+  DomainClass[0..1] role predDomainClass
+  DomainClass[0..1] role succDomainClass
+end
+
+composition SnapshotDomainClass between
+  Snapshot[1] role snapshotDomainClass
+  DomainClass[*]
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OperationCall[0..1]
+end
+
+class inc_DomainClassOpC < DomainClassOpC
+attributes
+  a : Integer
+end
+
+class DomainClass
+operations
+  inc(a : Integer)
+end
+
+constraints
+context DomainClass inv validSnapshotLinking:
+  (self.succDomainClass.isDefined() implies (self.succDomainClass.snapshotDomainClass = self.snapshotDomainClass.succ()))
+
+context DomainClassOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context DomainClassOpC inv aSelfInPred:
+  (self.aSelf.snapshotDomainClass = self.pred())
+
+context OperationCall inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OperationCall.allInstances()->forAll( op:OperationCall | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context Snapshot inv cycleFree:
+  Set{self.succ()}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+
+context inc_DomainClassOpC inv post_postInc:
+  (self.succ().domainClass->size() = a)
+
+context Snapshot::copy() : Snapshot
+  pre uncopied: self.succ().isUndefined()
+

@@ -1,0 +1,47 @@
+model RDS
+class Table
+attributes
+  name : String
+end
+
+class Column
+attributes
+  name : String
+  type : String
+end
+
+class Constraint
+attributes
+end
+
+class PrimaryKey < Constraint
+attributes
+	name: String
+end
+
+class ForeignKey < Constraint
+attributes
+	name: String
+end
+-- Association
+composition cols between
+	Table[1..1] role table
+	Column[0..*] role columns
+end
+composition keys between
+	Table[1..1] role table
+	Constraint[0..*] role const
+end
+association constraint between
+	Column[1..*] role col
+	Constraint[0..*] role constraint
+end
+association primary between
+	PrimaryKey[1..1] role priKey
+	Table[1..1] role tab	
+end
+association foreign between
+	ForeignKey[1..1] role forKey
+	Table[1..1] role refTable
+end
+-- Constraints

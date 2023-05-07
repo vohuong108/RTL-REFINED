@@ -1,0 +1,220 @@
+model BuyTicketModel
+
+
+class step1_act_BuyTicketOpC < BuyTicketOpC
+end
+
+aggregation PredSuccBuyTicket between
+  BuyTicket[0..1] role predBuyTicket
+  BuyTicket[0..1] role succBuyTicket
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OperationCall[0..1]
+end
+
+abstract class BuyTicketOpC < OperationCall
+attributes
+  aSelf : BuyTicket
+end
+
+class step3_act_BuyTicketOpC < BuyTicketOpC
+end
+
+aggregation PredSuccCustomer between
+  Customer[0..1] role predCustomer
+  Customer[0..1] role succCustomer
+end
+
+composition SnapshotTicket between
+  Snapshot[1] role snapshotTicket
+  Ticket[*]
+end
+
+class Snapshot
+operations
+  copy() : Snapshot
+    begin
+      declare s : Snapshot;
+      s := new Snapshot;
+      for cl in self.buyTicket do 
+        declare x : BuyTicket;
+        x := new BuyTicket;
+        insert (cl,x) into PredSuccBuyTicket;
+        insert (s,x) into SnapshotBuyTicket;
+      end;
+      for cl in self.customer do 
+        declare x : Customer;
+        x := new Customer;
+        insert (cl,x) into PredSuccCustomer;
+        insert (s,x) into SnapshotCustomer;
+      end;
+      ;
+      for cl in self.ticket do 
+        declare x : Ticket;
+        x := new Ticket;
+        insert (cl,x) into PredSuccTicket;
+        insert (s,x) into SnapshotTicket;
+      end;
+      for cl in s.buyTicket do 
+        cl.curStep := cl.predBuyTicket.curStep;
+      end;
+      for cl in self.buyTicket do 
+        if not cl.customer.isUndefined then
+          insert (cl.succBuyTicket,cl.customer.succCustomer) into BuyTicket_customer
+        end;
+        if not cl.avblTickets->isEmpty then
+          for elem in cl.avblTickets do 
+            insert (cl.succBuyTicket,elem.succTicket) into BuyTicket_avblTickets
+          end
+        end;
+        if not cl.ticket.isUndefined then
+          insert (cl.succBuyTicket,cl.ticket.succTicket) into BuyTicket_ticket
+        end;
+      end;
+      for cl in self.customer do 
+        if not cl.ticket->isEmpty then
+          for elem in cl.ticket do 
+            insert (cl.succCustomer,elem.succTicket) into Takes
+          end
+        end;
+      end;
+      result := s;
+    end
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+class step4_sys_BuyTicketOpC < BuyTicketOpC
+end
+
+class step2_sys_BuyTicketOpC < BuyTicketOpC
+end
+
+abstract class OperationCall
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+composition SnapshotCustomer between
+  Snapshot[1] role snapshotCustomer
+  Customer[*]
+end
+
+aggregation PredSuccTicket between
+  Ticket[0..1] role predTicket
+  Ticket[0..1] role succTicket
+end
+
+composition SnapshotBuyTicket between
+  Snapshot[1] role snapshotBuyTicket
+  BuyTicket[*]
+end
+
+class Ticket
+end
+
+class Customer
+end
+
+class BuyTicket
+attributes
+  curStep : String
+operations
+  step1_act()
+  step2_sys()
+  step3_act()
+  step4_sys()
+end
+
+association Takes between
+  Customer[0..1]
+  Ticket[*]
+end
+
+association BuyTicket_customer between
+  BuyTicket[0..1] role buyTicketCustomer
+  Customer[0..1]
+end
+
+association BuyTicket_ticket between
+  BuyTicket[0..1] role buyTicketTicket
+  Ticket[0..1]
+end
+
+association BuyTicket_avblTickets between
+  BuyTicket[0..1] role buyTicketAvblTickets
+  Ticket[*] role avblTickets
+end
+
+constraints
+context BuyTicket inv validLinkingBuyTicket_avblTickets:
+  self.avblTickets->forAll( c:Ticket | (c.snapshotTicket = self.snapshotBuyTicket) )
+
+context BuyTicket inv validLinkingBuyTicket_customer:
+  (self.customer.isDefined() implies (self.snapshotBuyTicket = self.customer.snapshotCustomer))
+
+context BuyTicket inv validLinkingBuyTicket_ticket:
+  (self.ticket.isDefined() implies (self.snapshotBuyTicket = self.ticket.snapshotTicket))
+
+context BuyTicket inv validSnapshotLinking:
+  (self.succBuyTicket.isDefined() implies (self.succBuyTicket.snapshotBuyTicket = self.snapshotBuyTicket.succ()))
+
+context BuyTicketOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context BuyTicketOpC inv aSelfInPred:
+  (self.aSelf.snapshotBuyTicket = self.pred())
+
+context Customer inv validLinkingTakes:
+  self.ticket->forAll( c:Ticket | (c.snapshotTicket = self.snapshotCustomer) )
+
+context Customer inv validSnapshotLinking:
+  (self.succCustomer.isDefined() implies (self.succCustomer.snapshotCustomer = self.snapshotCustomer.succ()))
+
+context OperationCall inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OperationCall.allInstances()->forAll( op:OperationCall | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context Snapshot inv cycleFree:
+  Set{self.succ()}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+
+context Ticket inv validSnapshotLinking:
+  (self.succTicket.isDefined() implies (self.succTicket.snapshotTicket = self.snapshotTicket.succ()))
+
+context step1_act_BuyTicketOpC inv post_nextStep:
+  (aSelf.succBuyTicket.curStep = 'step1_act')
+
+context step1_act_BuyTicketOpC inv pre_preStep:
+  (aSelf.curStep = '')
+
+context step2_sys_BuyTicketOpC inv post_nextStep:
+  (aSelf.succBuyTicket.curStep = 'step2_sys')
+
+context step2_sys_BuyTicketOpC inv pre_preStep:
+  (aSelf.curStep = 'step1_act')
+
+context step3_act_BuyTicketOpC inv post_nextStep:
+  (aSelf.succBuyTicket.curStep = 'step3_act')
+
+context step3_act_BuyTicketOpC inv pre_preStep:
+  if (aSelf.curStep = 'step2_sys') then true else false endif
+
+context step4_sys_BuyTicketOpC inv post_nextStep:
+  (aSelf.succBuyTicket.curStep = 'step4_sys')
+
+context step4_sys_BuyTicketOpC inv pre_preStep:
+  (aSelf.curStep = 'step3_act')
+
+context Snapshot::copy() : Snapshot
+  pre uncopied: self.succ().isUndefined()
+

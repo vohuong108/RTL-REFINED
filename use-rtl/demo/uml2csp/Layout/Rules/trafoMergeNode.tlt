@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram_Layout version="4">
+  <diagramOptions>
+    <autolayout>false</autolayout>
+    <antialiasing>false</antialiasing>
+    <showassocnames>false</showassocnames>
+    <showattributes>true</showattributes>
+    <showmultiplicities>false</showmultiplicities>
+    <showoperations>false</showoperations>
+    <showrolenames>false</showrolenames>
+    <showgrid>false</showgrid>
+  </diagramOptions>
+  <swimlane>
+    <X1>300</X1>
+    <X2>300</X2>
+    <X3>500</X3>
+    <X4>800</X4>
+    <Y1>200</Y1>
+    <Y2>200</Y2>
+    <Y3>400</Y3>
+    <Y4>400</Y4>
+  </swimlane>
+  <node type="Object">
+    <name>theActivityEdgeC</name>
+    <x_coord>53.16695576508312</x_coord>
+    <y_coord>244.54670418109396</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>theProcessA</name>
+    <x_coord>637.1960522347866</x_coord>
+    <y_coord>34.75095188513373</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>theActivityEdgeB</name>
+    <x_coord>110.1107243361624</x_coord>
+    <y_coord>81.0</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>theActivityEdgeA</name>
+    <x_coord>17.779691555169904</x_coord>
+    <y_coord>11.577848469687176</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>theProcessC</name>
+    <x_coord>621.9555184860936</x_coord>
+    <y_coord>297.0</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>theProcessB</name>
+    <x_coord>536.2635349468993</x_coord>
+    <y_coord>128.47852766554632</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>ae2p1</name>
+    <x_coord>349.8208048771787</x_coord>
+    <y_coord>31.820173508802355</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>ae2p3</name>
+    <x_coord>334.4374290433018</x_coord>
+    <y_coord>253.56335202255661</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>ae2p2</name>
+    <x_coord>382.08447364710196</x_coord>
+    <y_coord>106.59246368531686</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>assignment2</name>
+    <x_coord>521.0103031470809</x_coord>
+    <y_coord>232.44985196909977</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>assignment1</name>
+    <x_coord>634.3056609999344</x_coord>
+    <y_coord>212.0</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>mergeNode</name>
+    <x_coord>31.868850961207784</x_coord>
+    <y_coord>154.84395327411147</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <edge type="BinaryEdge">
+    <source>theActivityEdgeB</source>
+    <target>mergeNode</target>
+    <name>ConnectsTo</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>ConnectsTo</name>
+      <x_coord>95.5</x_coord>
+      <y_coord>125.51318359375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>target</name>
+      <x_coord>110.0</x_coord>
+      <y_coord>129.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>0..1</name>
+      <x_coord>83.359375</x_coord>
+      <y_coord>129.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>inEdge</name>
+      <x_coord>100.078125</x_coord>
+      <y_coord>170.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>145.0</x_coord>
+      <y_coord>170.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>141.0</x_coord>
+      <y_coord>129.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>108.0</x_coord>
+      <y_coord>150.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>theActivityEdgeB</source>
+    <target>ae2p2</target>
+    <name>ActivityEdge_AE2P</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>ActivityEdge_AE2P</name>
+      <x_coord>273.0625</x_coord>
+      <y_coord>94.28125</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>cp_ActivityEdge_AE2P</name>
+      <x_coord>257.578125</x_coord>
+      <y_coord>90.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>381.0</x_coord>
+      <y_coord>90.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>ae</name>
+      <x_coord>263.0</x_coord>
+      <y_coord>147.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>249.109375</x_coord>
+      <y_coord>52.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>261.0</x_coord>
+      <y_coord>106.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>378.0</x_coord>
+      <y_coord>111.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>assignment2</source>
+    <target>theProcessB</target>
+    <name>AssignsLeft</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>AssignsLeft</name>
+      <x_coord>566.9921875</x_coord>
+      <y_coord>187.671875</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>left</name>
+      <x_coord>595.0</x_coord>
+      <y_coord>217.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>635.109375</x_coord>
+      <y_coord>202.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>processIdentifier</name>
+      <x_coord>509.90625</x_coord>
+      <y_coord>207.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>0..1</name>
+      <x_coord>603.0</x_coord>
+      <y_coord>207.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>600.0</x_coord>
+      <y_coord>228.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>593.0</x_coord>
+      <y_coord>176.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>theActivityEdgeA</source>
+    <target>mergeNode</target>
+    <name>ConnectsTo</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>ConnectsTo</name>
+      <x_coord>61.0</x_coord>
+      <y_coord>90.51318359375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>target</name>
+      <x_coord>91.0</x_coord>
+      <y_coord>129.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>0..1</name>
+      <x_coord>64.359375</x_coord>
+      <y_coord>129.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>inEdge</name>
+      <x_coord>50.078125</x_coord>
+      <y_coord>100.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>87.453125</x_coord>
+      <y_coord>101.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>91.0</x_coord>
+      <y_coord>59.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>89.0</x_coord>
+      <y_coord>150.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>theActivityEdgeC</source>
+    <target>ae2p3</target>
+    <name>ActivityEdge_AE2P</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>ActivityEdge_AE2P</name>
+      <x_coord>220.5625</x_coord>
+      <y_coord>248.28125</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>cp_ActivityEdge_AE2P</name>
+      <x_coord>209.578125</x_coord>
+      <y_coord>287.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>333.0</x_coord>
+      <y_coord>287.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>ae</name>
+      <x_coord>206.0</x_coord>
+      <y_coord>228.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>190.109375</x_coord>
+      <y_coord>313.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>204.0</x_coord>
+      <y_coord>264.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>330.0</x_coord>
+      <y_coord>261.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>assignment2</source>
+    <target>theProcessC</target>
+    <name>AssignsRight</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>AssignsRight</name>
+      <x_coord>599.4921875</x_coord>
+      <y_coord>257.3125</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>right</name>
+      <x_coord>620.75</x_coord>
+      <y_coord>257.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>652.0</x_coord>
+      <y_coord>255.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>process</name>
+      <x_coord>614.0</x_coord>
+      <y_coord>276.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>606.453125</x_coord>
+      <y_coord>276.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>612.0</x_coord>
+      <y_coord>250.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>651.0</x_coord>
+      <y_coord>293.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>theProcessA</source>
+    <target>ae2p1</target>
+    <name>Process_AE2P</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>Process_AE2P</name>
+      <x_coord>487.0703125</x_coord>
+      <y_coord>32.40625</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>cp_Process_AE2P</name>
+      <x_coord>416.0</x_coord>
+      <y_coord>66.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>400.453125</x_coord>
+      <y_coord>75.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>p</name>
+      <x_coord>618.046875</x_coord>
+      <y_coord>17.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>636.0</x_coord>
+      <y_coord>18.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>633.0</x_coord>
+      <y_coord>53.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>414.0</x_coord>
+      <y_coord>40.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>theProcessC</source>
+    <target>ae2p3</target>
+    <name>Process_AE2P</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>Process_AE2P</name>
+      <x_coord>471.5703125</x_coord>
+      <y_coord>272.40625</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>cp_Process_AE2P</name>
+      <x_coord>401.0</x_coord>
+      <y_coord>292.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>386.453125</x_coord>
+      <y_coord>293.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>p</name>
+      <x_coord>602.046875</x_coord>
+      <y_coord>271.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>618.0</x_coord>
+      <y_coord>270.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>617.0</x_coord>
+      <y_coord>307.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>399.0</x_coord>
+      <y_coord>266.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>assignment1</source>
+    <target>theProcessA</target>
+    <name>AssignsLeft</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>AssignsLeft</name>
+      <x_coord>674.9921875</x_coord>
+      <y_coord>130.671875</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>left</name>
+      <x_coord>697.0</x_coord>
+      <y_coord>123.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>702.109375</x_coord>
+      <y_coord>124.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>processIdentifier</name>
+      <x_coord>623.90625</x_coord>
+      <y_coord>187.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>0..1</name>
+      <x_coord>716.0</x_coord>
+      <y_coord>188.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>714.0</x_coord>
+      <y_coord>208.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>695.0</x_coord>
+      <y_coord>82.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>theActivityEdgeC</source>
+    <target>mergeNode</target>
+    <name>ConnectsFrom</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>ConnectsFrom</name>
+      <x_coord>69.2734375</x_coord>
+      <y_coord>192.01318359375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>source</name>
+      <x_coord>94.0</x_coord>
+      <y_coord>198.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>0..1</name>
+      <x_coord>87.359375</x_coord>
+      <y_coord>198.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>outEdge</name>
+      <x_coord>68.703125</x_coord>
+      <y_coord>204.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>118.0</x_coord>
+      <y_coord>204.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>117.0</x_coord>
+      <y_coord>240.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>92.0</x_coord>
+      <y_coord>172.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>assignment1</source>
+    <target>theProcessC</target>
+    <name>AssignsRight</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>AssignsRight</name>
+      <x_coord>665.9921875</x_coord>
+      <y_coord>247.3125</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>right</name>
+      <x_coord>687.0</x_coord>
+      <y_coord>257.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>672.109375</x_coord>
+      <y_coord>255.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>process</name>
+      <x_coord>662.640625</x_coord>
+      <y_coord>256.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>706.453125</x_coord>
+      <y_coord>257.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>711.0</x_coord>
+      <y_coord>230.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>685.0</x_coord>
+      <y_coord>293.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>theProcessB</source>
+    <target>ae2p2</target>
+    <name>Process_AE2P</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>Process_AE2P</name>
+      <x_coord>453.0703125</x_coord>
+      <y_coord>114.90625</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>cp_Process_AE2P</name>
+      <x_coord>449.0</x_coord>
+      <y_coord>146.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>434.453125</x_coord>
+      <y_coord>89.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>p</name>
+      <x_coord>517.046875</x_coord>
+      <y_coord>102.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>535.0</x_coord>
+      <y_coord>102.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>532.0</x_coord>
+      <y_coord>138.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>447.0</x_coord>
+      <y_coord>120.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>theActivityEdgeA</source>
+    <target>ae2p1</target>
+    <name>ActivityEdge_AE2P</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>ActivityEdge_AE2P</name>
+      <x_coord>210.5625</x_coord>
+      <y_coord>21.78125</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>cp_ActivityEdge_AE2P</name>
+      <x_coord>224.578125</x_coord>
+      <y_coord>17.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>347.0</x_coord>
+      <y_coord>18.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>ae</name>
+      <x_coord>171.0</x_coord>
+      <y_coord>75.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>158.109375</x_coord>
+      <y_coord>88.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>169.0</x_coord>
+      <y_coord>34.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>345.0</x_coord>
+      <y_coord>38.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+</diagram_Layout>

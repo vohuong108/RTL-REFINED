@@ -1,0 +1,51 @@
+model ModelFindingTest04
+
+class DomainClass
+attributes
+	isPrbl: Boolean
+	unchangedAttr: Integer
+end
+
+class OtherClass1
+attributes
+	unchangedAttr: Integer
+end
+
+
+class ClassA
+attributes
+	obj: DomainClass
+	changedAttr: Integer
+	unchangedAttr: Integer
+	curStep: String
+operations
+	step1(a: Integer)
+	step2(b: Integer)	
+end
+
+association UnchangedAssoc between
+	DomainClass[1] role domainClass
+	OtherClass1[1] role otherClass1	
+end
+
+constraints
+
+context ClassA::step1(a: Integer) 
+post:
+	(changedAttr = changedAttr@pre + a) and 
+	(obj.isPrbl = true) and 
+	(curStep@pre = '') and 
+	(curStep = 'step1') and
+	--unchanged part
+	(unchangedAttr = unchangedAttr@pre) and
+	(obj = obj@pre)	
+
+context ClassA::step2(b: Integer) 
+post:
+	--(changedAttr = changedAttr@pre - b) and 
+	--(obj.isPrbl = false) and 
+	(curStep@pre = 'step1')	and 
+	(curStep = 'step2') and
+	--unchanged part
+	(unchangedAttr = unchangedAttr@pre) and
+	(obj = obj@pre)

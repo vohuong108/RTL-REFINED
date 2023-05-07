@@ -1,0 +1,329 @@
+transformation uml2csp
+direction forward
+if [InitialNode.allInstances->exists(i|i.outEdge.cp_ActivityEdge_AE2P = null)]
+	{
+		trafoInitialNode();
+	};
+match := 
+do
+	if [Action.allInstances->exists(ac|ac.cp_Action_AC2E = null and ac.inEdge.cp_ActivityEdge_AE2P <> null)]
+	{
+		trafoActionNode();
+	};
+	if [FinalNode.allInstances->exists(finalNode|finalNode.inEdge.cp_ActivityEdge_AE2P <> null
+	and finalNode.cp_FinalNode_F2P = null)]
+	{
+		trafoFinalNode();
+	};
+	if [DecisionNode.allInstances->exists(dcs|dcs.inEdge.cp_ActivityEdge_AE2P <> null and dcs.outEdge->size()=2
+	and dcs.outEdge->forAll(ae|ae.cp_ActivityEdge_AE2P = null))]
+	{
+		trafoDecision2Node();
+	};
+	if [DecisionNode.allInstances->exists(dcs|dcs.inEdge.cp_ActivityEdge_AE2P <> null and dcs.outEdge->size()=3
+	and dcs.outEdge->forAll(ae|ae.cp_ActivityEdge_AE2P = null))]
+	{
+		trafoDecision3Node();
+	};
+	if [ForkNode.allInstances->exists(fork|fork.inEdge.cp_ActivityEdge_AE2P <> null and fork.outEdge->size()=3
+	and fork.outEdge->forAll(ae|ae.cp_ActivityEdge_AE2P = null))]
+	{
+		trafoForkNode();
+	};
+	if [MergeNode.allInstances->exists(merge|merge.outEdge.cp_ActivityEdge_AE2P = null and merge.inEdge->size()=2
+	and merge.inEdge->forAll(ae|ae.cp_ActivityEdge_AE2P <> null))]
+	{
+		trafoMergeNode();
+	};
+	if [JoinNode.allInstances->exists(join|join.outEdge.cp_ActivityEdge_AE2P = null and join.inEdge->size()=3
+	and join.inEdge->forAll(ae|ae.cp_ActivityEdge_AE2P <> null))]
+	{
+		trafoJoinNode();
+	};
+while [ActivityEdge.allInstances->exists(ae|ae.cp_ActivityEdge_AE2P = null)];
+--------------------------------------------------
+rule trafoInitialNode
+checkSource(
+){
+	theActivityEdgeA: ActivityEdge
+	init: InitialNode
+	(theActivityEdgeA, init): ConnectsFrom
+	[theActivityEdgeA.name<>oclUndefined(String)]
+	[theActivityEdgeA.cp_ActivityEdge_AE2P->size()=0]
+}checkTarget(
+){
+	theProcessA: Process
+}checkCorr(	
+){
+	(theActivityEdgeA,theProcessA) as (ae,p) in ae2p:AE2P
+	AE2P:[self.p.name=self.ae.name]
+}end
+
+--------------------------------------------------
+rule trafoActionNode
+checkSource(
+	theActivityEdgeA: ActivityEdge
+
+	[theActivityEdgeA.name<>oclUndefined(String)]
+){
+	action: Action
+	theActivityEdgeB: ActivityEdge
+	(theActivityEdgeA, action): ConnectsTo
+	(theActivityEdgeB, action): ConnectsFrom
+	[action.name<>oclUndefined(String)]
+	[theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0]
+	[action.cp_Action_AC2E->size()=0]
+}checkTarget(
+	theProcessA: Process
+){
+	assignment: ProcessAssignment
+	prefix:Prefix
+	theProcessB: Process
+	theEvent:Event
+	(assignment, theProcessA): AssignsLeft
+	(assignment, prefix): AssignsRight
+	(prefix, theEvent): Performs
+	(prefix, theProcessB): Becomes
+}checkCorr(
+	(theActivityEdgeA,theProcessA) as (ae,p) in ae2p1:AE2P
+){
+	(theActivityEdgeB,theProcessB) as (ae,p) in ae2p2:AE2P
+	(action,theEvent) as (act,event) in ac2e:AC2E
+	AC2E:[self.event.name=self.act.name]
+}end
+
+--------------------------------------------------
+rule trafoFinalNode
+checkSource(
+	theActivityEdgeA: ActivityEdge
+	[theActivityEdgeA.name<>oclUndefined(String)]
+){
+	finalNode: FinalNode
+	(theActivityEdgeA, finalNode): ConnectsTo
+	[finalNode.cp_FinalNode_F2P->size()=0]
+}checkTarget(
+	theProcessA: Process	
+){
+	assignment: ProcessAssignment
+	SKIP:Process
+	(assignment, SKIP): AssignsRight
+	(assignment, theProcessA): AssignsLeft
+	[SKIP.name = 'SKIP']
+}checkCorr(
+	(theActivityEdgeA,theProcessA) as (ae,p) in ae2p:AE2P
+){
+	(finalNode,SKIP) as (f,p) in f2p:F2P
+}end
+
+--------------------------------------------------
+rule trafoDecision3Node
+checkSource(
+	theActivityEdgeA: ActivityEdge
+	[theActivityEdgeA.name<>oclUndefined(String)]
+){
+	decisionNode: DecisionNode
+	theActivityEdgeB: ActivityEdge
+	theActivityEdgeC: ActivityEdge
+	theActivityEdgeD: ActivityEdge
+	(theActivityEdgeA, decisionNode): ConnectsTo
+	(theActivityEdgeB, decisionNode): ConnectsFrom
+	(theActivityEdgeC, decisionNode): ConnectsFrom
+	(theActivityEdgeD, decisionNode): ConnectsFrom
+	[theActivityEdgeB.name<>oclUndefined(String)]
+	[theActivityEdgeC.name<>oclUndefined(String)]
+	[theActivityEdgeD.guard = 'else']
+	[decisionNode.outEdge->size()=3]
+	[theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0]
+	[theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0]
+	[theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0]
+}checkTarget(
+	theProcessA: Process
+){
+	assignment: ProcessAssignment
+	condition1: Condition
+	condition2: Condition
+	theProcessB: Process
+	theProcessC: Process
+	theProcessD: Process
+	(assignment, theProcessA): AssignsLeft
+	(assignment, condition1): AssignsRight
+	(condition1, theProcessB): CombinesLeft
+	(condition1, condition2): CombinesRight
+	(condition2, theProcessC): CombinesLeft
+	(condition2, theProcessD): CombinesRight
+}checkCorr(
+	(theActivityEdgeA,theProcessA) as (ae,p) in ae2p1:AE2P
+){
+	(theActivityEdgeB,theProcessB) as (ae,p) in ae2p2:AE2P
+	(theActivityEdgeC,theProcessC) as (ae,p) in ae2p3:AE2P
+	(theActivityEdgeD,theProcessD) as (ae,p) in ae2p4:AE2P
+	(theActivityEdgeB,condition1) as (ae,con) in ae2con1:AE2CON
+	(theActivityEdgeC,condition2) as (ae,con) in ae2con2:AE2CON
+	AE2CON:[self.con.expression=self.ae.guard]
+}end
+
+--------------------------------------------------
+rule trafoDecision2Node
+checkSource(
+	theActivityEdgeA: ActivityEdge
+	[theActivityEdgeA.name<>oclUndefined(String)]
+){
+	decisionNode: DecisionNode
+	theActivityEdgeB: ActivityEdge
+	theActivityEdgeC: ActivityEdge
+	(theActivityEdgeA, decisionNode): ConnectsTo
+	(theActivityEdgeB, decisionNode): ConnectsFrom
+	(theActivityEdgeC, decisionNode): ConnectsFrom
+	[theActivityEdgeB.name<>oclUndefined(String)]
+	[theActivityEdgeC.guard = 'else']
+	[decisionNode.outEdge->size()=2]
+	[theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0]
+	[theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0]
+}checkTarget(
+	theProcessA: Process
+){
+	assignment: ProcessAssignment
+	condition1: Condition
+	theProcessB: Process
+	theProcessC: Process
+	(assignment, theProcessA): AssignsLeft
+	(assignment, condition1): AssignsRight
+	(condition1, theProcessB): CombinesLeft
+	(condition1, theProcessC): CombinesRight
+}checkCorr(
+	(theActivityEdgeA,theProcessA) as (ae,p) in ae2p1:AE2P
+){
+	(theActivityEdgeB,theProcessB) as (ae,p) in ae2p2:AE2P
+	(theActivityEdgeC,theProcessC) as (ae,p) in ae2p3:AE2P
+	(theActivityEdgeB,condition1) as (ae,con) in ae2con1:AE2CON
+}end
+
+--------------------------------------------------
+rule trafoForkNode
+checkSource(
+	theActivityEdgeA: ActivityEdge
+	[theActivityEdgeA.name<>oclUndefined(String)]
+){
+	forkNode: ForkNode
+	theActivityEdgeB: ActivityEdge
+	theActivityEdgeC: ActivityEdge
+	theActivityEdgeD: ActivityEdge
+	(theActivityEdgeA, forkNode): ConnectsTo
+	(theActivityEdgeB, forkNode): ConnectsFrom
+	(theActivityEdgeC, forkNode): ConnectsFrom
+	(theActivityEdgeD, forkNode): ConnectsFrom	
+	[theActivityEdgeB.name<>oclUndefined(String)]
+	[theActivityEdgeC.name<>oclUndefined(String)]
+	[theActivityEdgeD.name<>oclUndefined(String)]
+	[theActivityEdgeB.cp_ActivityEdge_AE2P->size()=0]
+	[theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0]
+	[theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0]
+}checkTarget(
+	theProcessA: Process
+){
+	assignment: ProcessAssignment
+	concurrency1: Concurrency	
+	concurrency2: Concurrency
+	theProcessB: Process
+	theProcessC: Process
+	theProcessD: Process	
+	(assignment, theProcessA): AssignsLeft
+	(assignment, concurrency1): AssignsRight
+	(concurrency1, theProcessB): CombinesLeft
+	(concurrency1, concurrency2): CombinesRight
+	(concurrency2, theProcessC): CombinesLeft
+	(concurrency2, theProcessD): CombinesRight
+}checkCorr(
+	(theActivityEdgeA,theProcessA) as (ae,p) in ae2p1:AE2P
+){
+	(theActivityEdgeB,theProcessB) as (ae,p) in ae2p2:AE2P
+	(theActivityEdgeC,theProcessC) as (ae,p) in ae2p3:AE2P
+	(theActivityEdgeD,theProcessD) as (ae,p) in ae2p4:AE2P
+}end
+
+--------------------------------------------------
+rule trafoJoinNode
+checkSource(
+	theActivityEdgeA: ActivityEdge
+	theActivityEdgeB: ActivityEdge
+	theActivityEdgeC: ActivityEdge
+	[theActivityEdgeA.name<>oclUndefined(String)]
+	[theActivityEdgeB.name<>oclUndefined(String)]
+	[theActivityEdgeC.name<>oclUndefined(String)]
+){	
+	joinNode: JoinNode
+	theActivityEdgeD: ActivityEdge
+	(theActivityEdgeA, joinNode): ConnectsTo
+	(theActivityEdgeB, joinNode): ConnectsTo
+	(theActivityEdgeC, joinNode): ConnectsTo
+	(theActivityEdgeD, joinNode): ConnectsFrom
+	[theActivityEdgeD.name<>oclUndefined(String)]
+	[theActivityEdgeD.cp_ActivityEdge_AE2P->size()=0]
+}checkTarget(
+	theProcessA: Process
+	theProcessB: Process
+	theProcessC: Process
+){
+	assignment1: ProcessAssignment
+	assignment2: ProcessAssignment
+	assignment3: ProcessAssignment
+	prefix1: Prefix
+	prefix2: Prefix
+	prefix3: Prefix
+	processJoin: Event
+	SKIP:Process
+	theProcessD: Process
+	(assignment1, theProcessA): AssignsLeft
+	(assignment1, prefix1): AssignsRight
+	(assignment2, theProcessB): AssignsLeft
+	(assignment2, prefix2): AssignsRight
+	(assignment3, theProcessC): AssignsLeft
+	(assignment3, prefix3): AssignsRight
+	(prefix1, processJoin): Performs
+	(prefix1, theProcessD): Becomes
+	(prefix2, processJoin): Performs
+	(prefix2, SKIP): Becomes
+	(prefix3, processJoin): Performs
+	(prefix3, SKIP): Becomes
+	[SKIP.name='SKIP']
+	[processJoin.name='processJoin']
+}checkCorr(
+	(theActivityEdgeA,theProcessA) as (ae,p) in ae2p1:AE2P
+	(theActivityEdgeB,theProcessB) as (ae,p) in ae2p2:AE2P
+	(theActivityEdgeC,theProcessC) as (ae,p) in ae2p3:AE2P
+){
+	(theActivityEdgeD,theProcessD) as (ae,p) in ae2p4:AE2P
+}end
+
+--------------------------------------------------
+rule trafoMergeNode
+checkSource(
+	theActivityEdgeA: ActivityEdge
+	theActivityEdgeB: ActivityEdge
+	[theActivityEdgeA.name<>oclUndefined(String)]
+	[theActivityEdgeB.name<>oclUndefined(String)]
+
+){	theActivityEdgeC: ActivityEdge	
+	mergeNode: MergeNode
+	(theActivityEdgeA, mergeNode): ConnectsTo
+	(theActivityEdgeB, mergeNode): ConnectsTo
+	(theActivityEdgeC, mergeNode): ConnectsFrom	
+	[theActivityEdgeC.name<>oclUndefined(String)]
+	[theActivityEdgeC.cp_ActivityEdge_AE2P->size()=0]
+}checkTarget(
+	theProcessA: Process
+	theProcessB: Process
+){
+	assignment1: ProcessAssignment
+	assignment2: ProcessAssignment
+	theProcessC: Process
+	(assignment1, theProcessA): AssignsLeft
+	(assignment1, theProcessC): AssignsRight
+	(assignment2, theProcessB): AssignsLeft
+	(assignment2, theProcessC): AssignsRight
+}checkCorr(
+	(theActivityEdgeA,theProcessA) as (ae,p) in ae2p1:AE2P
+	(theActivityEdgeB,theProcessB) as (ae,p) in ae2p2:AE2P
+){
+	(theActivityEdgeC,theProcessC) as (ae,p) in ae2p3:AE2P
+}end

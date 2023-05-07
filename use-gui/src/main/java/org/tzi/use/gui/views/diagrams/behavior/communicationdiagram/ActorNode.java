@@ -1,0 +1,189 @@
+/*
+ * USE - UML based specification environment
+ * Copyright (C) 1999-2010 Mark Richters, University of Bremen
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+// $Id$
+
+package org.tzi.use.gui.views.diagrams.behavior.communicationdiagram;
+
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+
+import org.tzi.use.gui.views.diagrams.DiagramOptions;
+import org.tzi.use.gui.views.diagrams.behavior.DrawingUtil;
+import org.tzi.use.gui.views.diagrams.elements.PlaceableNode;
+import org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed;
+import org.tzi.use.gui.views.diagrams.elements.positioning.StrategyUnmovable;
+
+/**
+ * This class represents the actor as a node in communication diagrams.
+ * 
+ * @author Quang Dung Nguyen
+ * @author Carsten Schlobohm
+ * 
+ */
+public class ActorNode extends PlaceableNode {
+	// Margin from actor symbol to edges of this node
+	private static final int MARGIN = 5;
+	private final DiagramOptions fOpt;
+
+	private Actor user;
+	private boolean isAlwaysVisible;
+
+	public ActorNode(Actor user) {
+		this.user = user;
+		this.fOpt = new CommunicationDiagramOptions();
+		isAlwaysVisible = false;
+	}
+
+	public ActorNode(Actor user, boolean isAlwaysVisible, boolean isMovable) {
+		this(user);
+		this.isAlwaysVisible = isAlwaysVisible;
+		if (!isMovable) {
+			strategy = StrategyUnmovable.instance;
+		}
+	}
+
+	public Actor getActorData() {
+		return user;
+	}
+
+	public String ident() {
+		return "User." + getActorData().getUserName();
+	}
+
+	@Override
+	public boolean isHidden() {
+		if (!isAlwaysVisible) {
+			return super.isHidden();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isVisible() {
+		return !isHidden();
+	}
+
+	@Override
+	public String getId() {
+		return getActorData().getUserName();
+	}
+
+	/**
+	 * Drawing the actor node
+	 */
+	@Override
+	protected void onDraw(Graphics2D g) {
+		Color oldColor = g.getColor();
+
+		Rectangle2D currentBounds = getBounds();
+		FontMetrics fm = g.getFontMetrics();
+
+		g.setColor(new Color(255, 255, 255, 1));
+		g.fill(currentBounds);
+		g.draw(currentBounds);
+
+		int x = (int) currentBounds.getCenterX();
+		int y = (int) currentBounds.getY();
+
+		if (isSelected()) {
+			g.setColor(fOpt.getNODE_SELECTED_COLOR());
+		} else {
+			g.setColor(fOpt.getEDGE_COLOR());
+		}
+
+		DrawingUtil.drawBigActor(x, y + MARGIN, g);
+		g.drawString(user.getUserName(), (int) (currentBounds.getCenterX() - fm.stringWidth(user.getUserName()) / 2), (int) currentBounds.getMinY()
+				+ DrawingUtil.TOTAL_HEIGHT_BIG + fm.getAscent() + 2 * MARGIN);
+		g.setColor(oldColor);
+	}
+
+	/**
+	 * Sets the correct size of the width and height of this object node. This
+	 * method needs to be called before actually drawing the node. (Width and
+	 * height are needed from other methods before the nodes are drawn.)
+	 */
+	@Override
+	public void doCalculateSize(Graphics2D g) {
+		FontMetrics fm = g.getFontMetrics();
+
+		int labelWidth = fm.stringWidth(user.getUserName());
+		int nameHeight = fm.getAscent();
+		int maxWidth;
+
+		if (labelWidth < DrawingUtil.ARMS_LENGTH_BIG) {
+			maxWidth = DrawingUtil.ARMS_LENGTH_BIG;
+		} else {
+			maxWidth = labelWidth;
+		}
+
+		setCalculatedBounds(maxWidth + 2 * MARGIN, nameHeight + DrawingUtil.TOTAL_HEIGHT_BIG + 3 * MARGIN);
+	}
+
+	@Override
+	public String name() {
+		return getActorData().getUserName();
+	}
+
+	/**
+	 * Check if the actor node movable
+	 * 
+	 * @return true if actor node movable, otherwise false
+	 */
+	public boolean isUnmovable() {
+		return (strategy instanceof StrategyUnmovable);
+	}
+
+	/**
+	 * Set the actor node unmovable and the strategy.
+	 * 
+	 * @param unmovableActor 'true' if the actor shouldn't move
+	 * 
+	 */
+	public void setUnmovable(boolean unmovableActor) {
+		if (unmovableActor) {
+			setStrategy(StrategyUnmovable.instance);
+		} else {
+			setStrategy(StrategyFixed.instance);
+		}
+	}
+
+	/**
+	 *
+	 * @param isAlwaysVisible if true the actor node can't be hidden
+	 */
+	public void setIsAlwaysVisible(boolean isAlwaysVisible) {
+		this.isAlwaysVisible = isAlwaysVisible;
+	}
+
+	/**
+	 * @return true if it is possible to hide the actor node else false
+	 */
+	public boolean isAlwaysVisible() {
+		return isAlwaysVisible;
+	}
+
+	@Override
+	protected String getStoreType() {
+		return "User Node";
+	}
+
+}

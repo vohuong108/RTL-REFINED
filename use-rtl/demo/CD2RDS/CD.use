@@ -1,0 +1,49 @@
+model CD2
+class Class
+attributes
+  name : String
+  is_persistent : Boolean
+end
+
+class Attribute
+attributes
+  name : String
+  is_primary : Boolean
+end
+
+class Association
+attributes
+  name : String
+end
+
+class PrimitiveDataType
+attributes
+  name : String
+end
+
+-- Associations
+association src between
+	Association[0..*] role end1Assoc
+	Class[0..*] role end1
+end
+association dest between
+	Association[0..*] role end2Assoc
+	Class[0..*] role end2
+end
+composition attrs between
+	Class[0..*] role belongTo
+	Attribute[0..1] role has
+end
+association parent between
+	Class[0..1] role parent
+	Class[0..*] role child
+end
+association type between
+	Attribute[0..*] role attr
+	Class[0..*] role type
+end
+association priType between
+	Attribute[0..*] role attr
+	PrimitiveDataType[0..*] role priType
+end
+-- Constraints

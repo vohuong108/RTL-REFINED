@@ -1,0 +1,97 @@
+package ticketModel{	
+	class Ticket{
+		attribute id: Integer;
+		attribute value: Integer;		
+	}					
+	class Customer {				
+		attribute money: Integer;			
+	}	
+}
+
+association Takes
+  customer: Customer[0..1]
+  ticket: Ticket[0..*]
+end
+
+actor Customer
+end
+
+usecase BuyTicket		
+	description = 'This use case describes a customer buying ticket'	
+	primaryActor = Customer
+	
+	ucPrecondition	
+	description = 'The customer wants to buy a ticket.'
+		customer: Customer;
+		ticket: Ticket;
+		!(customer, ticket): Takes;
+	end
+	
+	ucPostcondition	
+	description = 'The customer buys a ticket successfully.'
+		(customer, ticket): Takes;
+	end
+
+	actStep step1 	
+	description = '1. The customer wants to buy a ticket.'
+	from
+		customer: Customer;
+		[customer.money > 0]
+	to
+	end	
+
+	sysStep step2
+	description = '2. The system displays a list of available tickets.'
+	from
+		$avblTickets: Set(Ticket);
+		['@oclCompile' = 'avblTickets = Ticket.allInstances()->select(t:Ticket | t.customer.oclIsUndefined())']
+	to
+	actions	
+		Customer <- ticketIds: Set(Integer) = avblTickets->collect(id)->asSet();	
+	end
+
+	actStep step3 	
+	description = '3. The customer selects a ticket to buy.'
+	from	
+		avblTickets: Set(Ticket);
+		['@oclCompile' = 'avblTickets->collect(id)->asSet()->includes(inputId)']
+	to	
+	actions
+		Customer -> inputId: Integer;
+	end
+
+	sysStep step4 	
+	description = '4. The system presents the money and updates the payment.'
+	from	
+		customer: Customer;
+		$ticket: Ticket;
+		!(customer, ticket): Takes;
+		[ticket.id = inputId]
+	to					
+		(customer, ticket): Takes;
+		[customer.money=customer.money@pre - ticket.value]
+		['@changed' <> 'customer/{money}; ticket/{customer}']
+	end		
+	
+	altStep at step3
+		description = '3a. The customer does not have enough money.'
+		when
+			[customer.money < ticket.value]		
+		end
+
+		sysStep step3a1
+		description = '3a.1. The system informs that the money is not enought.'
+		from
+		to	
+		actions
+			Customer <- msg: String = 'The money is not enought!';
+		end
+		
+		rejoinStep step3
+		description = '3a.2 The customer repeats Step3 to re-select another ticket.'
+		when
+			[customer.money < ticket.value]
+		end
+	end
+
+end

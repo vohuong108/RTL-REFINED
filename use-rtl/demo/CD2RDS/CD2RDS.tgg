@@ -1,0 +1,145 @@
+transformation uml2csp
+direction forward
+--------------------------------------------------
+rule trafoClass2Table
+checkSource(
+){	
+	theClassA: Class
+	[theClassA.name<>oclUndefined(String)]
+	[theClassA.is_persistent=true]
+	[theClassA.cp_Class_C2T->size()=0]
+}checkTarget(
+){
+	theTableA: Table
+}checkCorr(		
+){
+	(theClassA,theTableA) as (c,t) in c2t:C2T
+	C2T:[self.t.name=self.c.name]
+}end
+
+rule trafoPriAtt2Col
+checkSource(
+	theClassA: Class
+	[theClassA.name<>oclUndefined(String)]
+){	
+	theAttrA: Attribute
+	thePriTypeA: PrimitiveDataType
+	(theAttrA, thePriTypeA): priType
+	(theClassA, theAttrA): attrs
+	[theAttrA.name<>oclUndefined(String)]
+	[thePriTypeA.name<>oclUndefined(String)]
+	[theAttrA.cp_Attribute_A2C->size()=0]
+	[thePriTypeA.cp_PrimitiveDataType_P2C->size()=0]
+}checkTarget(
+	theTableA: Table
+){
+	theColumnA: Column
+	(theTableA, theColumnA): cols
+}checkCorr(	
+	(theClassA,theTableA) as (c,t) in c2t:C2T
+){
+	(theAttrA,theColumnA) as (a,c) in a2c:A2C
+	(thePriTypeA,theColumnA) as (p,c) in p2c:P2C
+	A2C:[self.c.name=self.a.name]
+	P2C:[self.c.type=self.p.name]
+}end
+
+rule trafoPerAtt2Col
+checkSource(
+	theClassA: Class
+	theClassB: Class
+	[theClassA.name<>oclUndefined(String)]
+	[theClassB.name<>oclUndefined(String)]
+){	
+	theAttrA: Attribute
+	(theAttrA, theClassB): type
+	(theClassA, theAttrA): attrs
+	[theAttrA.name<>oclUndefined(String)]
+	[theAttrA.cp_Attribute_A2F->size()=0]
+}checkTarget(
+	theTableA: Table
+	theTableB: Table
+	theColumnB: Column
+	thePriKeyA: PrimaryKey
+	(theTableB, theColumnB): cols
+	(theTableB, thePriKeyA): keys
+	(thePriKeyA, theTableB): primary
+	(theColumnB, thePriKeyA): constraint
+){
+	theColumnA: Column
+	theForeignKeyA: ForeignKey
+	(theTableA, theColumnA): cols
+	(theTableA, theForeignKeyA): keys
+	(theForeignKeyA, theTableB): foreign
+	(theColumnA, theForeignKeyA): constraint
+	[theColumnA.type = theColumnB.type]
+}checkCorr(	
+	(theClassA,theTableA) as (c,t) in c2t:C2T
+	(theClassB,theTableB) as (c,t) in c2t1:C2T
+){
+	(theAttrA,theColumnA) as (a,f) in a2f:A2F
+	A2F:[self.f.name=self.a.name]
+}end
+
+rule trafoPrimary2PKey
+checkSource(
+	theClassA: Class
+	theAttrA: Attribute
+	(theClassA, theAttrA): attrs
+	[theClassA.name<>oclUndefined(String)]
+	[theAttrA.name<>oclUndefined(String)]
+	[theAttrA.is_primary=true]
+){	
+	
+}checkTarget(
+	theTableA: Table
+	theColumnA: Column
+	(theTableA, theColumnA): cols
+	[theTableA.priKey->size()=0]
+){
+	thePriKeyA: PrimaryKey
+	(theTableA, thePriKeyA): keys
+	(thePriKeyA, theTableA): primary
+	(theColumnA, thePriKeyA): constraint
+}checkCorr(	
+	(theClassA,theTableA) as (c,t) in c2t:C2T
+	(theAttrA,theColumnA) as (a,c) in a2c:A2C
+){
+}end
+
+rule trafoAss2Col
+checkSource(
+	theClassA: Class
+	theClassB: Class
+	[theClassA.name<>oclUndefined(String)]
+	[theClassB.name<>oclUndefined(String)]
+){	
+	theAssA: Association
+	(theAssA, theClassA): src
+	(theAssA, theClassB): dest
+	[theAssA.name<>oclUndefined(String)]
+	[theAssA.cp_Association_ASS2C->size()=0]
+}checkTarget(
+	theTableA: Table
+	theTableB: Table
+	theColumnB: Column
+	thePriKeyA: PrimaryKey
+	(theTableB, theColumnB): cols
+	(theTableB, thePriKeyA): keys
+	(thePriKeyA, theTableB): primary
+	(theColumnB, thePriKeyA): constraint
+){
+	theColumnA: Column
+	theForeignKeyA: ForeignKey
+	(theTableA, theColumnA): cols
+	(theTableA, theForeignKeyA): keys
+	(theForeignKeyA, theTableB): foreign
+	(theColumnA, theForeignKeyA): constraint
+	[theColumnA.type = theColumnB.type]
+}checkCorr(	
+	(theClassA,theTableA) as (c,t) in c2t:C2T
+	(theClassB,theTableB) as (c,t) in c2t1:C2T
+){
+	(theAssA,theColumnA) as (ass,c) in ass2c:ASS2C
+	ASS2C:[self.c.name=self.ass.name]
+}end

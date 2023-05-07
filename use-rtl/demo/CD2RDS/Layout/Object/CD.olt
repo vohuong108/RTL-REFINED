@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram_Layout version="4">
+  <diagramOptions>
+    <autolayout>false</autolayout>
+    <antialiasing>false</antialiasing>
+    <showassocnames>true</showassocnames>
+    <showattributes>true</showattributes>
+    <showmultiplicities>false</showmultiplicities>
+    <showoperations>false</showoperations>
+    <showrolenames>false</showrolenames>
+    <showgrid>false</showgrid>
+  </diagramOptions>
+  <node type="Object">
+    <name>Job</name>
+    <x_coord>209.24408945350012</x_coord>
+    <y_coord>247.6537793520173</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>Hire</name>
+    <x_coord>130.35665790448206</x_coord>
+    <y_coord>312.55499445139014</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>CompanyID</name>
+    <x_coord>264.46712178310804</x_coord>
+    <y_coord>440.25196491743554</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>PersonName</name>
+    <x_coord>95.67460165783598</x_coord>
+    <y_coord>37.73643005233845</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>PersonID</name>
+    <x_coord>250.87980975876735</x_coord>
+    <y_coord>37.19115838986511</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>String</name>
+    <x_coord>19.206567222724402</x_coord>
+    <y_coord>122.78038205476605</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>JobName</name>
+    <x_coord>39.940019187378084</x_coord>
+    <y_coord>249.17685771136178</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>Work</name>
+    <x_coord>122.49247225686298</x_coord>
+    <y_coord>191.5739114762938</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>CompanyName</name>
+    <x_coord>78.44861246974608</x_coord>
+    <y_coord>440.53640308418096</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>Company</name>
+    <x_coord>190.10163867744427</x_coord>
+    <y_coord>364.1429461830961</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>Int</name>
+    <x_coord>269.0667893363658</x_coord>
+    <y_coord>191.56703402338258</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>Person</name>
+    <x_coord>183.81985285049535</x_coord>
+    <y_coord>118.62478809389194</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <edge type="BinaryEdge">
+    <source>PersonID</source>
+    <target>Int</target>
+    <name>priType</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>priType</name>
+      <x_coord>289.5</x_coord>
+      <y_coord>121.8125</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>priType</name>
+      <x_coord>271.0625</x_coord>
+      <y_coord>159.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>318.0</x_coord>
+      <y_coord>158.5</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>attr</name>
+      <x_coord>301.0</x_coord>
+      <y_coord>126.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>285.453125</x_coord>
+      <y_coord>126.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>299.0</x_coord>
+      <y_coord>85.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>316.0</x_coord>
+      <y_coord>187.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>Person</source>
+    <target>PersonID</target>
+    <name>attrs</name>
+    <edgeproperty type="associationName" userDefined="true">
+      <name>attrs</name>
+      <x_coord>265.0</x_coord>
+      <y_coord>95.82568359375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>has</name>
+      <x_coord>247.640625</x_coord>
+      <y_coord>126.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>0..1</name>
+      <x_coord>276.0</x_coord>
+      <y_coord>126.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>belongTo</name>
+      <x_coord>252.0</x_coord>
+      <y_coord>78.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>236.453125</x_coord>
+      <y_coord>78.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>250.0</x_coord>
+      <y_coord>114.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>274.0</x_coord>
+      <y_coord>85.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>CompanyName</source>
+    <target>String</target>
+    <name>priType</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>priType</name>
+      <x_coord>88.5</x_coord>
+      <y_coord>281.3125</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>priType</name>
+      <x_coord>83.0</x_coord>
+      <y_coord>188.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>67.453125</x_coord>
+      <y_coord>188.5</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>attr</name>
+      <x_coord>106.578125</x_coord>
+      <y_coord>400.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>134.0</x_coord>
+      <y_coord>400.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>132.0</x_coord>
+      <y_coord>436.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>81.0</x_coord>
+      <y_coord>155.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>Company</source>
+    <target>CompanyID</target>
+    <name>attrs</name>
+    <edgeproperty type="associationName" userDefined="true">
+      <name>attrs</name>
+      <x_coord>270.5</x_coord>
+      <y_coord>405.32568359375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>has</name>
+      <x_coord>259.640625</x_coord>
+      <y_coord>400.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>0..1</name>
+      <x_coord>288.0</x_coord>
+      <y_coord>400.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>belongTo</name>
+      <x_coord>263.0</x_coord>
+      <y_coord>453.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>247.453125</x_coord>
+      <y_coord>453.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>261.0</x_coord>
+      <y_coord>412.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>286.0</x_coord>
+      <y_coord>436.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>Job</source>
+    <target>JobName</target>
+    <name>attrs</name>
+    <edgeproperty type="associationName" userDefined="true">
+      <name>attrs</name>
+      <x_coord>162.00000000000006</x_coord>
+      <y_coord>257.32568359375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>has</name>
+      <x_coord>135.0</x_coord>
+      <y_coord>234.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>0..1</name>
+      <x_coord>107.359375</x_coord>
+      <y_coord>234.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>belongTo</name>
+      <x_coord>152.015625</x_coord>
+      <y_coord>311.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>207.0</x_coord>
+      <y_coord>311.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>205.0</x_coord>
+      <y_coord>270.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>133.0</x_coord>
+      <y_coord>270.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>CompanyID</source>
+    <target>Int</target>
+    <name>priType</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>priType</name>
+      <x_coord>298.5</x_coord>
+      <y_coord>315.8125</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>priType</name>
+      <x_coord>274.0625</x_coord>
+      <y_coord>257.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>321.0</x_coord>
+      <y_coord>257.5</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>attr</name>
+      <x_coord>316.0</x_coord>
+      <y_coord>400.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>300.453125</x_coord>
+      <y_coord>400.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>314.0</x_coord>
+      <y_coord>436.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>319.0</x_coord>
+      <y_coord>224.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>Work</source>
+    <target>Job</target>
+    <name>dest</name>
+    <edgeproperty type="associationName" userDefined="true">
+      <name>dest</name>
+      <x_coord>207.5</x_coord>
+      <y_coord>222.65380859375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>end2</name>
+      <x_coord>182.875</x_coord>
+      <y_coord>207.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>218.0</x_coord>
+      <y_coord>207.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>end2Assoc</name>
+      <x_coord>192.0</x_coord>
+      <y_coord>257.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>176.453125</x_coord>
+      <y_coord>257.5</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>190.0</x_coord>
+      <y_coord>224.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>216.0</x_coord>
+      <y_coord>243.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>Person</source>
+    <target>PersonName</target>
+    <name>attrs</name>
+    <edgeproperty type="associationName" userDefined="true">
+      <name>attrs</name>
+      <x_coord>197.5</x_coord>
+      <y_coord>95.82568359375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>has</name>
+      <x_coord>175.0</x_coord>
+      <y_coord>126.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>0..1</name>
+      <x_coord>147.359375</x_coord>
+      <y_coord>126.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>belongTo</name>
+      <x_coord>149.015625</x_coord>
+      <y_coord>78.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>204.0</x_coord>
+      <y_coord>78.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>202.0</x_coord>
+      <y_coord>114.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>173.0</x_coord>
+      <y_coord>85.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>Hire</source>
+    <target>Company</target>
+    <name>src</name>
+    <edgeproperty type="associationName" userDefined="true">
+      <name>src</name>
+      <x_coord>207.0</x_coord>
+      <y_coord>347.70068359375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>end1</name>
+      <x_coord>174.3125</x_coord>
+      <y_coord>324.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>208.0</x_coord>
+      <y_coord>324.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>end1Assoc</name>
+      <x_coord>192.0</x_coord>
+      <y_coord>378.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>176.453125</x_coord>
+      <y_coord>378.5</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>190.0</x_coord>
+      <y_coord>345.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>206.0</x_coord>
+      <y_coord>360.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>PersonName</source>
+    <target>String</target>
+    <name>priType</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>priType</name>
+      <x_coord>92.5</x_coord>
+      <y_coord>87.3125</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>priType</name>
+      <x_coord>97.0</x_coord>
+      <y_coord>90.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>81.453125</x_coord>
+      <y_coord>89.5</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>attr</name>
+      <x_coord>100.578125</x_coord>
+      <y_coord>126.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>128.0</x_coord>
+      <y_coord>126.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>126.0</x_coord>
+      <y_coord>85.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>95.0</x_coord>
+      <y_coord>118.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>JobName</source>
+    <target>String</target>
+    <name>priType</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>priType</name>
+      <x_coord>63.0</x_coord>
+      <y_coord>185.8125</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>priType</name>
+      <x_coord>81.0</x_coord>
+      <y_coord>188.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>65.453125</x_coord>
+      <y_coord>188.5</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>attr</name>
+      <x_coord>57.578125</x_coord>
+      <y_coord>209.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>85.0</x_coord>
+      <y_coord>209.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>83.0</x_coord>
+      <y_coord>245.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>79.0</x_coord>
+      <y_coord>155.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>Hire</source>
+    <target>Job</target>
+    <name>dest</name>
+    <edgeproperty type="associationName" userDefined="true">
+      <name>dest</name>
+      <x_coord>214.0</x_coord>
+      <y_coord>298.65380859375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>end2</name>
+      <x_coord>183.875</x_coord>
+      <y_coord>336.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>219.0</x_coord>
+      <y_coord>336.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>end2Assoc</name>
+      <x_coord>200.0</x_coord>
+      <y_coord>280.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>184.453125</x_coord>
+      <y_coord>279.5</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>198.0</x_coord>
+      <y_coord>308.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>217.0</x_coord>
+      <y_coord>295.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>Company</source>
+    <target>CompanyName</target>
+    <name>attrs</name>
+    <edgeproperty type="associationName" userDefined="true">
+      <name>attrs</name>
+      <x_coord>187.0</x_coord>
+      <y_coord>423.32568359375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>has</name>
+      <x_coord>173.0</x_coord>
+      <y_coord>400.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>0..1</name>
+      <x_coord>145.359375</x_coord>
+      <y_coord>400.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>belongTo</name>
+      <x_coord>148.015625</x_coord>
+      <y_coord>453.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>203.0</x_coord>
+      <y_coord>453.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>201.0</x_coord>
+      <y_coord>412.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>171.0</x_coord>
+      <y_coord>436.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>Work</source>
+    <target>Person</target>
+    <name>src</name>
+    <edgeproperty type="associationName" userDefined="true">
+      <name>src</name>
+      <x_coord>172.0</x_coord>
+      <y_coord>169.70068359375</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>end1</name>
+      <x_coord>172.3125</x_coord>
+      <y_coord>207.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>206.0</x_coord>
+      <y_coord>207.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="false">
+      <name>end1Assoc</name>
+      <x_coord>186.0</x_coord>
+      <y_coord>159.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>170.453125</x_coord>
+      <y_coord>158.5</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>184.0</x_coord>
+      <y_coord>187.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>204.0</x_coord>
+      <y_coord>166.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+</diagram_Layout>

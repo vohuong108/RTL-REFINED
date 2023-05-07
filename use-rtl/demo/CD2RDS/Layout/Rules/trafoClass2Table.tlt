@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram_Layout version="4">
+  <diagramOptions>
+    <autolayout>false</autolayout>
+    <antialiasing>false</antialiasing>
+    <showassocnames>false</showassocnames>
+    <showattributes>true</showattributes>
+    <showmultiplicities>false</showmultiplicities>
+    <showoperations>false</showoperations>
+    <showrolenames>true</showrolenames>
+    <showgrid>false</showgrid>
+  </diagramOptions>
+  <swimlane>
+    <X1>259</X1>
+    <X2>259</X2>
+    <X3>340</X3>
+    <X4>800</X4>
+    <Y1>40</Y1>
+    <Y2>40</Y2>
+    <Y3>145</Y3>
+    <Y4>145</Y4>
+  </swimlane>
+  <node type="Object">
+    <name>theTableA</name>
+    <x_coord>410.6770685682757</x_coord>
+    <y_coord>67.72239049464474</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>c2t</name>
+    <x_coord>283.55777545662403</x_coord>
+    <y_coord>75.33064723216768</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <node type="Object">
+    <name>theClassA</name>
+    <x_coord>32.52375666991475</x_coord>
+    <y_coord>60.754882476405896</y_coord>
+    <hidden>false</hidden>
+  </node>
+  <edge type="BinaryEdge">
+    <source>theClassA</source>
+    <target>c2t</target>
+    <name>Class_C2T</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>Class_C2T</name>
+      <x_coord>172.25</x_coord>
+      <y_coord>67.796875</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>cp_Class_C2T</name>
+      <x_coord>198.9375</x_coord>
+      <y_coord>61.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>281.0</x_coord>
+      <y_coord>62.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="true">
+      <name>c</name>
+      <x_coord>125.0</x_coord>
+      <y_coord>91.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>105.109375</x_coord>
+      <y_coord>48.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>118.0</x_coord>
+      <y_coord>82.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>279.0</x_coord>
+      <y_coord>82.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+  <edge type="BinaryEdge">
+    <source>theTableA</source>
+    <target>c2t</target>
+    <name>Table_C2T</name>
+    <edgeproperty type="associationName" userDefined="false">
+      <name>Table_C2T</name>
+      <x_coord>340.25</x_coord>
+      <y_coord>67.796875</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="rolename" userDefined="false">
+      <name>cp_Table_C2T</name>
+      <x_coord>328.0</x_coord>
+      <y_coord>61.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="target" type="multiplicity" userDefined="false">
+      <name>*</name>
+      <x_coord>312.453125</x_coord>
+      <y_coord>62.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="rolename" userDefined="true">
+      <name>t</name>
+      <x_coord>389.21875</x_coord>
+      <y_coord>90.0</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty kind="source" type="multiplicity" userDefined="false">
+      <name>1</name>
+      <x_coord>407.0</x_coord>
+      <y_coord>120.5</y_coord>
+      <hidden>false</hidden>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>0</name>
+      <x_coord>406.0</x_coord>
+      <y_coord>82.0</y_coord>
+      <hidden>false</hidden>
+      <id>0</id>
+      <specialid>1</specialid>
+    </edgeproperty>
+    <edgeproperty type="WayPoint" userDefined="false">
+      <name>1</name>
+      <x_coord>326.0</x_coord>
+      <y_coord>82.0</y_coord>
+      <hidden>false</hidden>
+      <id>1</id>
+      <specialid>2</specialid>
+    </edgeproperty>
+    <hidden>false</hidden>
+  </edge>
+</diagram_Layout>

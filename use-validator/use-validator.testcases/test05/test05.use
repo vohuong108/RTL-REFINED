@@ -1,0 +1,23 @@
+model testOpPost
+
+class DomainClass
+attributes
+	isPrbl: Boolean
+end
+
+class ClassA < DomainClass
+attributes
+	obj: DomainClass
+	unChange: Integer
+	aChange: Integer
+operations 
+	op(a: Integer)
+end
+
+constraints
+
+context ClassA::op(a: Integer)
+	post postCond: 
+		aChange = aChange@pre + a 		
+		and unChange = unChange@pre
+		and DomainClass.allInstances->forAll(a: DomainClass | a.isPrbl = a.isPrbl@pre)
