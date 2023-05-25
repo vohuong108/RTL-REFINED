@@ -86,6 +86,7 @@ import org.tzi.use.util.input.SocketReadline;
 import org.tzi.use.util.soil.exceptions.EvaluationFailedException;
 import org.uet.dse.rtlplus.RTLLoader;
 import org.uet.dse.rtlplus.actions.ActionAutoRunMatches;
+import org.uet.dse.rtlplus.actions.ActionIncrementalUpdate;
 import org.uet.dse.rtlplus.actions.ActionOpenRTL;
 import processOutput.ProcessOutput;
 
@@ -204,6 +205,7 @@ public final class Shell implements Runnable, PPCHandler {
 	@Override
 	public void run() {
 		PrintWriter writer = null;
+		MainWindow mainWindow = null;
 
 		if (Options.doGUI) {
 			setupReadline();
@@ -219,13 +221,12 @@ public final class Shell implements Runnable, PPCHandler {
 				}
 			}
 
-			MainWindow mainWindow = null;
-
 			while (mainWindow == null){
 				mainWindow = MainWindow.instance();
 			}
 
 			writer = mainWindow.logWriter();
+
 		} else {
 			writer = new PrintWriter(System.out);
 		}
@@ -233,12 +234,17 @@ public final class Shell implements Runnable, PPCHandler {
 		RTLLoader loader = new RTLLoader(fSession,
 				new File("F:\\Vo Huong\\KLTN\\LabWorkflow\\LaboratoryWorkflow.use"),
 				new File("F:\\Vo Huong\\KLTN\\LabWorkflow\\LiquidHandlingJobs.use"),
-				"F:\\Vo Huong\\KLTN\\LabWorkflow\\v3forward.tgg",
+				"F:\\Vo Huong\\KLTN\\LabWorkflow\\v4forward.tgg",
 				writer
 		);
 		loader.run();
 
-		String[] TESTCASE = {"scale_sample"};
+//		if(Options.doGUI) {
+//			ActionIncrementalUpdate actionIncrementalUpdate = new ActionIncrementalUpdate();
+//			actionIncrementalUpdate.performActionCustomUI(mainWindow, fSession);
+//		}
+
+		String[] TESTCASE = {"scale_sample, sample_scale"};
 
 		for (String NAME : TESTCASE) {
 			BufferedWriter writerMeasure = null;
@@ -247,9 +253,9 @@ public final class Shell implements Runnable, PPCHandler {
 			try
 			{
 				writerMeasure = new BufferedWriter( new FileWriter(String.format(
-						"F:/Vo Huong/KLTN/LabWorkflow/testcase/report_1_%s.txt", NAME), true));
+						"F:/Vo Huong/KLTN/LabWorkflow/testcase/report_%s.txt", NAME), true));
 
-				for(int i = 5; i <= 5; i++) {
+				for(int i = 0; i <= 5; i++) {
 					int levelScale = (int) Math.pow(2, i);
 					System.out.println(String.format("EXEC -> %s_%d", NAME.toUpperCase(), levelScale));
 
@@ -278,21 +284,20 @@ public final class Shell implements Runnable, PPCHandler {
 					final long endTime = System.currentTimeMillis();
 
 					System.out.println("Total execution time: " + (endTime - startTime));
-					writerMeasure.write(String.format("%s_%d: %s\n", NAME, levelScale, endTime - startTime));
-					writerMeasure.flush();
+//					writerMeasure.write(String.format("%s_%d: %s\n", NAME, levelScale, endTime - startTime));
+//					writerMeasure.flush();
+//
+//					ProcessOutput output = new ProcessOutput(fSession, NAME, levelScale);
+//					output.report();
+//					System.out.println("DONE EXPORT\n");
 
-					ProcessOutput output = new ProcessOutput(fSession, NAME, levelScale);
-					output.report();
-
-					System.out.println("DONE EXPORT\n");
-
-					processLineSafely("reset");
-					Thread.yield();
-					Log.resetOutputFlag();
-
-					processLineSafely("!new RuleCollection('rc')");
-					Thread.yield();
-					Log.resetOutputFlag();
+//					processLineSafely("reset");
+//					Thread.yield();
+//					Log.resetOutputFlag();
+//
+//					processLineSafely("!new RuleCollection('rc')");
+//					Thread.yield();
+//					Log.resetOutputFlag();
 				}
 			} catch (Exception e) {
 				System.err.println(e.getMessage());

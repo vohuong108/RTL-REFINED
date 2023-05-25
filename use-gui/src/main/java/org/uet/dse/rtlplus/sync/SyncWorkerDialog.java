@@ -1,6 +1,7 @@
 package org.uet.dse.rtlplus.sync;
 
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -59,7 +60,13 @@ public class SyncWorkerDialog extends JPanel {
 		if (fMatches.isEmpty()) {
 			logWriter.println("No forward matches available.");
 		} else {
-			URL url = Main.class.getResource("/resources/list.png");
+//			URL url = Main.class.getResource("/resources/list.png");
+			URL url = null;
+			try {
+				url = new URL("file:/F:/Vo Huong/KLTN/use-use-frsl/use-gui/src/main/resources/images/list.png");
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
+			}
 			//the commandView is a view stub to avoid the error with the operation detachModel() that is invoked from vf's view            
 			CommandView cv = new CommandView(state.system());
 			ViewFrame vf = new ViewFrame("New matches found!", cv, "");

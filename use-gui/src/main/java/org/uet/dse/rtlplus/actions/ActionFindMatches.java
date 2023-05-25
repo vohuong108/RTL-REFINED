@@ -1,6 +1,7 @@
 package org.uet.dse.rtlplus.actions;
 
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +75,14 @@ public class ActionFindMatches implements IPluginActionDelegate {
 			JOptionPane.showMessageDialog(mainWindow, "No matches were found.");
 		else {
 			EventBus eventBus = pluginAction.getSession().system().getEventBus();
-			URL url = Main.class.getResource("/resources/list.png");
+//			URL url = Main.class.getResource("/resources/list.png");
+			URL url = null;
+			try {
+				url = new URL("file:/F:/Vo Huong/KLTN/use-use-frsl/use-gui/src/main/resources/images/list.png");
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
+			}
+
 			//the commandView is a view stub to avoid the error with the operation detachModel() that is invoked from vf's view            
 			CommandView cv = new CommandView(state.system());
 			ViewFrame vf = new ViewFrame("Match list", cv, "");

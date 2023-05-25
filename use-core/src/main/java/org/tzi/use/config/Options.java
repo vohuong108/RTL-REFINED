@@ -133,7 +133,7 @@ public class Options {
      * If <code>true</code> the USE GUI is started.
      * Otherwise, only the shell is available.
      */
-    public static boolean doGUI = true;
+    public static boolean doGUI = false;
     
     public static boolean suppressWarningsAboutMissingReadlineLibrary = false;
     

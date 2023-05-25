@@ -1,5 +1,6 @@
 package org.uet.dse.rtlplus.actions;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -21,7 +22,14 @@ public class ActionShowRuleList implements IPluginActionDelegate {
 		if (Main.getTggRuleCollection().getRuleList().size() == 0) {
 			JOptionPane.showMessageDialog(parent, "No rules available.");
 		} else {
-			URL url = Main.class.getResource("/resources/rtl.png");
+			//URL url = Main.class.getResource("/resources/rtl.png");
+			URL url = null;
+			try {
+				url = new URL("file:/F:/Vo Huong/KLTN/use-use-frsl/use-gui/src/main/resources/images/rtl.png");
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
+			}
+
 			//the commandView is a view stub to avoid the error with the operation detachModel() that is invoked from vf's view            
 			CommandView cv = new CommandView(pluginAction.getSession().system());
 			ViewFrame fViewFrame = new ViewFrame("Transformation rules", cv, "");
